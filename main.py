@@ -13,7 +13,7 @@ if __name__ == '__main__':
         [4.5, 6.9, 4.4],
     ]
 
-    query = [[1.1, 2.3, 3.2]]
+    query = [1.1, 2.3, 3.2]
     k = 3
 
     f = FaissNearestNeighbors(_embeddings)

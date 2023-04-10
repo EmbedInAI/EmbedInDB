@@ -1,5 +1,5 @@
 from hnswlib import Index as HNSWIndex
-from src.nearest_neighbors import NearestNeighbors, to_np_array
+from src.nearest_neighbors import NearestNeighbors
 
 
 class HNSWNearestNeighbors(NearestNeighbors):
@@ -10,7 +10,6 @@ class HNSWNearestNeighbors(NearestNeighbors):
         index.set_ef(100)
         return index
 
-    def _search_index(self, query_embedding, k):
-        query_embedding = to_np_array(query_embedding)
-        indices, _ = self.index.knn_query(query_embedding, k=k)
+    def _search_index(self, query_embeddings, top_k):
+        indices, _ = self.index.knn_query(query_embeddings, k=top_k)
         return indices[0]

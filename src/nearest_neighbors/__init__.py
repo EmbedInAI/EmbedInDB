@@ -3,8 +3,8 @@ from abc import ABC, abstractmethod
 import numpy as np
 
 
-def to_np_array(query_embedding):
-    return np.array(query_embedding, dtype=np.float32).reshape(1, -1)
+def to_np_array(query_embeddings):
+    return np.array(query_embeddings, dtype=np.float32).reshape(1, -1)
 
 
 class NearestNeighbors(ABC):
@@ -23,23 +23,24 @@ class NearestNeighbors(ABC):
         pass
 
     @abstractmethod
-    def _search_index(self, query_embedding, k):
+    def _search_index(self, query_embeddings, top_k):
         pass
 
-    def search(self, query_embedding, k=3):
+    def search(self, query_embeddings, top_k=3):
         """
         Perform nearest neighbor on a set of embeddings.
 
         Args:
-            query_embedding (list or array): The query embedding to use for the
+            query_embeddings (list or array): The query embedding to use for the
             nearest neighbor search.
-            k (int, optional): The number of nearest neighbors to return.
+            top_k (int, optional): The number of nearest neighbors to return.
             Defaults to 3.
 
         Returns:
            A list of the indices of the nearest neighbors, and a list of their
            corresponding distances.
         """
-        k = min(k, self.count)
-        indices = self._search_index(query_embedding, k)
+        top_k = min(top_k, self.count)
+        query_embeddings = to_np_array(query_embeddings)
+        indices = self._search_index(query_embeddings, top_k)
         return indices

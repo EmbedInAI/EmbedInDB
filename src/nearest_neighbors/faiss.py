@@ -1,6 +1,6 @@
 import faiss
 
-from src.nearest_neighbors import NearestNeighbors, to_np_array
+from src.nearest_neighbors import NearestNeighbors
 
 
 class FaissNearestNeighbors(NearestNeighbors):
@@ -9,7 +9,6 @@ class FaissNearestNeighbors(NearestNeighbors):
         index.add(self.embeddings)
         return index
 
-    def _search_index(self, query_embedding, k):
-        query_embedding = to_np_array(query_embedding)
-        _, indices = self.index.search(query_embedding, k)
+    def _search_index(self, query_embeddings, top_k):
+        _, indices = self.index.search(query_embeddings, top_k)
         return indices[0]
