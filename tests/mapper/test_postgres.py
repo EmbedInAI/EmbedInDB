@@ -1,5 +1,6 @@
+import os
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 from src.mapper.postgres import Postgres
 
@@ -7,13 +8,8 @@ from src.mapper.postgres import Postgres
 class TestPostgres(unittest.TestCase):
 
     def setUp(self):
-        self.config = MagicMock()
-        self.config.host = "localhost"
-        self.config.port = 5432
-        self.config.user = "test"
-        self.config.password = "test"
-        self.config.dbname = "test"
-        self.postgres = Postgres(self.config)
+        db_url = os.environ.get('DATABASE_URL', "postgres://postgres:postgres@localhost:5432/test_db")
+        self.postgres = Postgres(db_url)
 
     def tearDown(self):
         conn = self.postgres.conn
