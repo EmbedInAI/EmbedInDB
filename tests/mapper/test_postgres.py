@@ -10,6 +10,11 @@ class TestPostgres(unittest.TestCase):
     def setUp(self):
         db_url = os.environ.get('DATABASE_URL', "postgres://postgres:postgres@localhost:5432/test_db")
         self.postgres = Postgres(db_url)
+        cur = self.postgres.conn.cursor()
+        cur.execute("""
+                        DROP TABLE IF EXISTS collection, embedding CASCADE;
+                    """)
+        cur.close()
 
     def tearDown(self):
         conn = self.postgres.conn
@@ -43,11 +48,18 @@ class TestPostgres(unittest.TestCase):
         collection_id = self.postgres.create_collection('collection_name')[0][0]
         embeddings = [[1, 2, 3], [4, 5, 6]]
         texts = ['text1', 'text2']
-        self.postgres.add(collection_id, embeddings, texts)
+        r1 = self.postgres.add(collection_id, embeddings, texts)
+        self.assertEqual(len(r1), 2)
+
         results = self.postgres.get(collection_id=collection_id)
         self.assertEqual(len(results), 2)
-        self.assertEqual(results[0]['embedding'], [1.0, 2.0, 3.0])
+        self.assertEqual(results[0]['embedding_data'], [1.0, 2.0, 3.0])
         self.assertEqual(results[1]['text'], 'text2')
+
+        embeddings = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+        texts = ['text1', 'text2', 'text3']
+        r2 = self.postgres.add(collection_id, embeddings, texts)
+        self.assertEqual(len(r2), 1)  # only 1 record is inserted
 
     def test_get_with_collection_name(self):
         collection_name = 'collection_name'
@@ -57,7 +69,7 @@ class TestPostgres(unittest.TestCase):
         self.postgres.add(collection_id, embeddings, texts)
         results = self.postgres.get(collection_name=collection_name)
         self.assertEqual(len(results), 2)
-        self.assertEqual(results[0]['embedding'], [1.0, 2.0, 3.0])
+        self.assertEqual(results[0]['embedding_data'], [1.0, 2.0, 3.0])
         self.assertEqual(results[1]['text'], 'text2')
 
     def test_get_with_invalid_collection_name(self):

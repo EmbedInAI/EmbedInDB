@@ -1,9 +1,14 @@
+import hashlib
+import json
+import logging
 import uuid
 
 import psycopg2
 
 from src.mapper import DB
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 
 class Postgres(DB):
@@ -30,25 +35,41 @@ class Postgres(DB):
 
     def _create_tables(self):
         with self.conn.cursor() as cursor:
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS collection (
-                    id UUID PRIMARY KEY,
-                    name VARCHAR(255) NOT NULL,
-                    created_at TIMESTAMP NOT NULL DEFAULT NOW()
-                )
-            """)
+            try:
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS collection (
+                        id UUID PRIMARY KEY,
+                        name VARCHAR(255) NOT NULL,
+                        created_at TIMESTAMP NOT NULL DEFAULT NOW()
+                    )
+                """)
 
-            cursor.execute("""
-                            CREATE TABLE IF NOT EXISTS embedding (
-                                id UUID PRIMARY KEY,
-                                collection_id UUID NOT NULL,
-                                text TEXT NOT NULL,
-                                embedding FLOAT[] NOT NULL,
-                                metadata JSONB NULL,
-                                created_at TIMESTAMP NOT NULL DEFAULT NOW()
-                            )
-                        """)
-            self.conn.commit()
+                cursor.execute("""
+                                CREATE TABLE IF NOT EXISTS embedding (
+                                    id UUID PRIMARY KEY,
+                                    collection_id UUID NOT NULL,
+                                    text TEXT NOT NULL,
+                                    embedding_data FLOAT[] NOT NULL,
+                                    metadata JSONB NULL,
+                                    hash TEXT NOT NULL,
+                                    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+                                )
+                            """)
+
+                cursor.execute("""
+                    SELECT count(*) 
+                    FROM pg_constraint 
+                    WHERE conname = 'unique_hash'
+                    AND conrelid = 'embedding'::regclass
+                """)
+                constraint_exists = cursor.fetchone()[0] == 1
+
+                if not constraint_exists:
+                    cursor.execute("""
+                        ALTER TABLE IF EXISTS embedding ADD CONSTRAINT unique_hash UNIQUE (hash)
+                    """)
+            except Exception as e:
+                print("Error: ", e)
 
     def create_collection(self, name, get_if_exist=True):
         self._create_tables()
@@ -69,37 +90,63 @@ class Postgres(DB):
         with self.conn.cursor() as cur:
             # Generate a list of tuples for executemany
             rows = []
-            for i, emb in enumerate(embeddings):
+            for i, embedding in enumerate(embeddings):
                 # Generate a UUID for the embedding
                 emb_id = str(uuid.uuid4())
+
+                meta_data = metadata_list[i] if metadata_list else None
+                data = texts[i] + collection_id + json.dumps(meta_data)
+
+                hashed = hashlib.sha256(data.encode()).hexdigest()
 
                 # Construct a row tuple with the columns of the embedding table
                 row = (
                     emb_id,
                     collection_id,
                     texts[i],
-                    emb,
-                    metadata_list[i] if metadata_list else None,
+                    embedding,
+                    meta_data,
+                    hashed,
                     datetime.now()
                 )
                 rows.append(row)
 
             # Construct the SQL statement with placeholders for multiple rows
             placeholders = ",".join(["%s"] * len(rows[0]))
+
             sql = f"""
-            INSERT INTO embedding (id, collection_id, text, embedding, metadata, created_at)
-            VALUES ({placeholders})
+            INSERT INTO embedding (id, collection_id, text, embedding_data, metadata, hash, created_at)
+            VALUES ({placeholders}) ON CONFLICT (hash) DO NOTHING
             """
 
             # Print out the SQL statement and the rows being executed
-            print(f"Executing SQL statement: {sql}")
+            logger.info("Executing SQL statement: %s", sql)
             for row in rows:
-                print(f"Inserting row: {row}")
+                logger.info("Inserting row: %s", row)
 
-            # Use executemany to insert the rows in bulk
-            cur.executemany(sql, rows)
+            try:
+                # Use executemany to insert the rows in bulk
+                cur.executemany(sql, rows)
 
-    def get(self, collection_name=None, collection_id=None):
+                self.conn.commit()
+            except (psycopg2.IntegrityError, psycopg2.ProgrammingError) as e:
+                self.conn.rollback()
+                logger.error("Error: Duplicate hash values detected: %s", str(e))
+
+            # Get the successfully inserted data
+            ids = [row[0] for row in rows]
+            placeholders = ','.join(['%s'] * len(ids))
+            query = f"""
+                SELECT id, collection_id, text, embedding_data, metadata, created_at
+                FROM embedding
+                WHERE id IN ({placeholders}) 
+            """
+            cur.execute(query, ids)
+            inserted_rows = cur.fetchall()
+
+            return inserted_rows
+
+    def get(self, collection_id=None, collection_name=None):
         with self.conn.cursor() as cur:
             if collection_name:
                 # Retrieve the collection_id for the specified collection_name
@@ -113,7 +160,7 @@ class Postgres(DB):
 
             # Retrieve the embeddings for the specified collection_id
             cur.execute(
-                "SELECT id, collection_id, text, embedding, metadata, created_at FROM embedding WHERE collection_id = %s",
+                "SELECT id, collection_id, text, embedding_data, metadata, created_at FROM embedding WHERE collection_id = %s",
                 (collection_id,))
             rows = cur.fetchall()
 
@@ -124,7 +171,7 @@ class Postgres(DB):
                     "id": row[0],
                     "collection_id": row[1],
                     "text": row[2],
-                    "embedding": row[3],
+                    "embedding_data": row[3],
                     "metadata": row[4],
                     "created_at": row[5]
                 }
