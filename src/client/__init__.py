@@ -1,5 +1,6 @@
 from src.embedding.sentence_transformer import SentenceTransformerEmbedding
 from src.mapper.postgres import Postgres
+from src.mapper.sqlite import SQLite
 from src.nearest_neighbors.hnswlib import HNSWNearestNeighbors
 import logging
 
@@ -18,7 +19,7 @@ class Client:
 
         # TODO: use default memory DB (e.g. SQLite)
         if url is None:
-            self.db = None
+            self.db = SQLite()
         else:
             # TODO: per different url, construct different DB client
             self.db = Postgres(url)
@@ -38,7 +39,7 @@ class Client:
     def add_data(self, texts, meta_data_list=None):
         embeddings = self.embedding_fn(texts)
         inserted_data = self.db.add(self.collection_id, embeddings, texts)
-        logger.info("inserted_data: %s", inserted_data)
+        # logger.info("inserted_data: %s", inserted_data)
 
         self.embeddings = self.db.get(self.collection_id)
 

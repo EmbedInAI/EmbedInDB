@@ -4,7 +4,18 @@ from abc import ABC, abstractmethod
 class DB(ABC):
     @abstractmethod
     def __init__(self):
-        pass
+        self.conn = None
+
+    def close(self):
+        if self.conn:
+            self.conn.close()
+            self.conn = None
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
 
     @abstractmethod
     def create_collection(self, name, get_if_exist=False):

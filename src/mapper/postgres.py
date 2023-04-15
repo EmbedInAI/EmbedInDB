@@ -15,17 +15,6 @@ class Postgres(DB):
     def __init__(self, db_url):
         self.conn = psycopg2.connect(db_url)
 
-    def close(self):
-        if self.conn:
-            self.conn.close()
-            self.conn = None
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close()
-
     def get_collection(self, name):
         with self.conn.cursor() as cursor:
             query = "SELECT id, name FROM collection WHERE name = %s"
@@ -118,11 +107,6 @@ class Postgres(DB):
             INSERT INTO embedding (id, collection_id, text, embedding_data, metadata, hash, created_at)
             VALUES ({placeholders}) ON CONFLICT (hash) DO NOTHING
             """
-
-            # Print out the SQL statement and the rows being executed
-            logger.info("Executing SQL statement: %s", sql)
-            for row in rows:
-                logger.info("Inserting row: %s", row)
 
             try:
                 # Use executemany to insert the rows in bulk
