@@ -1,15 +1,15 @@
-# crowdannoDB
+# embedin
 
 ## For development
 
 Clone the repo
 ```bash
-git clone https://github.com/CrowdAnno/crowdannoDB.git
+git clone https://github.com/EmbedInAI/embedin.git
 ```
 
 Start PostgreSQL DB
 ```bash
-cd crowdannoDB/docker
+cd embedin/docker
 docker-compose up
 ```
 

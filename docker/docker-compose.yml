@@ -1,8 +1,8 @@
 version: '3.8'
 
 services:
-  vectorimo-postgres:
-    container_name: vectorimo-postgres
+  embedin-postgres:
+    container_name: embedin-postgres
     image: postgres
     restart: always
     build:

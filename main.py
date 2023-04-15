@@ -3,7 +3,7 @@ import os
 from src.client import Client
 
 if __name__ == '__main__':
-    # db_url = os.environ.get('DATABASE_URL', "postgres://postgres:postgres@localhost:5432/postgres")
+    # url = os.environ.get('DATABASE_URL', "postgres://postgres:postgres@localhost:5432/postgres")
 
     # use sqlite in-memory
     client = Client(collection_name="test_collection")
