@@ -1,4 +1,5 @@
 # Embedin
+[![Coverage Status](https://coveralls.io/repos/github/EmbedInAI/EmbedInDB/badge.svg)](https://coveralls.io/github/EmbedInAI/EmbedInDB)
 
 ## Installation
 ```bash
