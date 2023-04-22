@@ -9,20 +9,26 @@ from embedin.service.collection_service import CollectionService
 from embedin.service.embedding_service import EmbeddingService
 
 # Configure the root logger to output to the console
-logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
+logging.basicConfig(
+    format="%(asctime)s - %(levelname)s - %(message)s", level=logging.INFO
+)
 
 logger = logging.getLogger(__name__)
 
 
 class Client:
-    def __init__(self, collection_name, url=None,
-                 embedding_fn=SentenceTransformerEmbedding(), debug=False):
+    def __init__(
+        self,
+        collection_name,
+        url=None,
+        embedding_fn=SentenceTransformerEmbedding(),
+        debug=False,
+    ):
         self.collection_id = None
         self.embedding_fn = embedding_fn
 
         if url is None:
-            engine = create_engine('sqlite:///:memory:', echo=debug)
+            engine = create_engine("sqlite:///:memory:", echo=debug)
         else:
             engine = create_engine(url)
 
@@ -60,7 +66,9 @@ class Client:
 
     def add_data(self, texts, meta_data=None):
         embeddings = self.embedding_fn(texts)
-        inserted_data = self.embedding_service.add_all(self.collection_id, embeddings, texts, meta_data)
+        inserted_data = self.embedding_service.add_all(
+            self.collection_id, embeddings, texts, meta_data
+        )
         logger.info("inserted_data: %s", inserted_data)
 
         self.embeddings += inserted_data
@@ -77,7 +85,9 @@ class Client:
             query_texts = [query_texts]
         query_embeddings = self.embedding_fn(query_texts)
         indices = self.nearest_neighbors.search(query_embeddings, top_k)
-        matched_embeddings = [{'text': r.text, 'meta_data': r.meta_data}
-                              for i, r in enumerate(self.embeddings)
-                              if i in indices]
+        matched_embeddings = [
+            {"text": r.text, "meta_data": r.meta_data}
+            for i, r in enumerate(self.embeddings)
+            if i in indices
+        ]
         return matched_embeddings

@@ -7,8 +7,10 @@ class HNSWNearestNeighbors(NearestNeighbors):
     # TODO: save index to DB; load index from DB
     def _build_index(self):
         # TODO: double check all those magic numbers
-        index = HNSWIndex('cosine', self.embeddings.shape[1])
-        index.init_index(max_elements=self.embeddings.shape[0], ef_construction=100, M=16)
+        index = HNSWIndex("cosine", self.embeddings.shape[1])
+        index.init_index(
+            max_elements=self.embeddings.shape[0], ef_construction=100, M=16
+        )
         index.add_items(self.embeddings)
         index.set_ef(100)
         return index
