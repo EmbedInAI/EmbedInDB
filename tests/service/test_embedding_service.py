@@ -9,7 +9,6 @@ from embedin.service.embedding_service import EmbeddingService
 
 
 class TestEmbeddingService(unittest.TestCase):
-
     def setUp(self):
         self.session = Mock()
         self.embedding_repo = EmbeddingRepository(self.session)
@@ -18,35 +17,37 @@ class TestEmbeddingService(unittest.TestCase):
 
     def test_add_all(self):
         # Define mock data
-        collection_id = 'test_collection'
+        collection_id = "test_collection"
         embeddings = [[1, 2, 3], [4, 5, 6]]
-        texts = ['test_text_1', 'test_text_2']
-        metadata_list = [{'meta1': 'value1'}, {'meta2': 'value2'}]
+        texts = ["test_text_1", "test_text_2"]
+        metadata_list = [{"meta1": "value1"}, {"meta2": "value2"}]
         expected_rows = [
             EmbeddingModel(
-                id='test_id_1',
+                id="test_id_1",
                 collection_id=collection_id,
                 text=texts[0],
                 embedding_data=[1, 2, 3],
                 meta_data=metadata_list[0],
-                hash='test_hash_1',
-                created_at=datetime.now()
+                hash="test_hash_1",
+                created_at=datetime.now(),
             ),
             EmbeddingModel(
-                id='test_id_2',
+                id="test_id_2",
                 collection_id=collection_id,
                 text=texts[1],
                 embedding_data=[4, 5, 6],
                 meta_data=metadata_list[1],
-                hash='test_hash_2',
-                created_at=datetime.now()
-            )
+                hash="test_hash_2",
+                created_at=datetime.now(),
+            ),
         ]
         # Mock dependency methods
         self.service.embedding_repo.add_all = Mock(return_value=expected_rows)
 
         # Call the function being tested
-        actual_rows = self.service.add_all(collection_id, embeddings, texts, metadata_list)
+        actual_rows = self.service.add_all(
+            collection_id, embeddings, texts, metadata_list
+        )
 
         # Check the result
         self.assertEqual(actual_rows, expected_rows)
@@ -58,30 +59,32 @@ class TestEmbeddingService(unittest.TestCase):
 
     def test_get_by_collection_id(self):
         # Define mock data
-        collection_id = 'test_collection'
+        collection_id = "test_collection"
         embeddings = [[1, 2, 3], [4, 5, 6]]
         expected_rows = [
             EmbeddingModel(
-                id='test_id_1',
+                id="test_id_1",
                 collection_id=collection_id,
-                text='test_text_1',
+                text="test_text_1",
                 embedding_data=[1, 2, 3],
                 meta_data=None,
-                hash='test_hash_1',
-                created_at=datetime.now()
+                hash="test_hash_1",
+                created_at=datetime.now(),
             ),
             EmbeddingModel(
-                id='test_id_2',
+                id="test_id_2",
                 collection_id=collection_id,
-                text='test_text_2',
+                text="test_text_2",
                 embedding_data=[4, 5, 6],
                 meta_data=None,
-                hash='test_hash_2',
-                created_at=datetime.now()
-            )
+                hash="test_hash_2",
+                created_at=datetime.now(),
+            ),
         ]
         # Mock dependency methods
-        self.service.embedding_repo.get_by_collection_id = Mock(return_value=expected_rows)
+        self.service.embedding_repo.get_by_collection_id = Mock(
+            return_value=expected_rows
+        )
 
         # Call the function being tested
         actual_rows = self.service.get_by_collection_id(collection_id)
