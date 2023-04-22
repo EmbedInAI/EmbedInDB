@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from src.util import to_np_array
+from embedin.util import to_np_array
 
 
 class NearestNeighbors(ABC):

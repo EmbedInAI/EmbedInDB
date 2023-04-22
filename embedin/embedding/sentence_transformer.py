@@ -1,6 +1,6 @@
 from sentence_transformers import SentenceTransformer
 
-from src.embedding import Embedding
+from embedin.embedding import Embedding
 
 
 class SentenceTransformerEmbedding(Embedding):

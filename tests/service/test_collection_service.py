@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock
-from src.repository.collection_repository import CollectionRepository
-from src.service.collection_service import CollectionService
+from embedin.repository.collection_repository import CollectionRepository
+from embedin.service.collection_service import CollectionService
 
 
 class TestCollectionService(unittest.TestCase):

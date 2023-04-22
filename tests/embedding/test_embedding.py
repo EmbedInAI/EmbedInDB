@@ -1,6 +1,6 @@
 import unittest
 
-from src.embedding.sentence_transformer import SentenceTransformerEmbedding
+from embedin.embedding.sentence_transformer import SentenceTransformerEmbedding
 
 
 class TestSentenceTransformerEmbedding(unittest.TestCase):

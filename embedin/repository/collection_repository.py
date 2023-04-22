@@ -1,6 +1,6 @@
 import uuid
 
-from src.model.collection_model import CollectionModel
+from embedin.model.collection_model import CollectionModel
 
 
 class CollectionRepository:

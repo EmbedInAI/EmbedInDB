@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import MagicMock
-from src.client import Client
+from embedin.client import Client
 
 
 class TestClient(unittest.TestCase):

@@ -1,6 +1,6 @@
 import unittest
 
-from src.embedding import Embedding
+from embedin.embedding import Embedding
 
 
 class TestEmbedding(unittest.TestCase):

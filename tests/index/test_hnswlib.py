@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 
 from hnswlib import Index as HNSWIndex
-from src.index.hnswlib import HNSWNearestNeighbors
+from embedin.index.hnswlib import HNSWNearestNeighbors
 
 
 class TestHNSWNearestNeighbors(unittest.TestCase):

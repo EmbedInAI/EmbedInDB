@@ -1,6 +1,6 @@
 import os
 
-from src.client import Client
+from embedin.client import Client
 
 if __name__ == '__main__':
     sqlite_url = 'sqlite:///test.db'

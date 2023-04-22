@@ -1,6 +1,6 @@
 from sqlalchemy.exc import IntegrityError
 
-from src.model.embedding_model import EmbeddingModel
+from embedin.model.embedding_model import EmbeddingModel
 
 
 class EmbeddingRepository:

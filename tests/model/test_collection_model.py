@@ -2,7 +2,7 @@ import unittest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from src.model.collection_model import CollectionModel, Base
+from embedin.model.collection_model import CollectionModel, Base
 
 engine = create_engine('sqlite:///:memory:', echo=True)
 Session = sessionmaker(bind=engine)

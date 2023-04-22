@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 
 import faiss
-from src.index.faiss import FaissNearestNeighbors
+from embedin.index.faiss import FaissNearestNeighbors
 
 
 class TestFaissNearestNeighbors(unittest.TestCase):

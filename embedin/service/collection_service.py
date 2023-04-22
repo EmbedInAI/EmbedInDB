@@ -1,4 +1,4 @@
-from src.repository.collection_repository import CollectionRepository
+from embedin.repository.collection_repository import CollectionRepository
 
 
 class CollectionService:

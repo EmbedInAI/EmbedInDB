@@ -1,4 +1,4 @@
-# embedin
+# Embedin
 
 ## For development
 
@@ -50,4 +50,13 @@ Run unit test with coverage report
 ```bash
 coverage run -m unittest discover -s tests -p '*.py'
 coverage report
+```
+
+To publish to PyPI
+```bash
+pip install twine
+```
+
+```bash
+python setup.py sdist && python setup.py bdist_wheel && twine upload dist/*
 ```

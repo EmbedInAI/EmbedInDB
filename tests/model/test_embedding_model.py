@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from src.model.embedding_model import Base, EmbeddingModel
+from embedin.model.embedding_model import Base, EmbeddingModel
 
 engine = create_engine('sqlite:///:memory:', echo=True)
 Session = sessionmaker(bind=engine)

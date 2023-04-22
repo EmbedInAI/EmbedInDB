@@ -1,8 +1,8 @@
 from unittest import TestCase, mock
 from unittest.mock import Mock, patch
 
-from src.model.collection_model import CollectionModel
-from src.repository.collection_repository import CollectionRepository
+from embedin.model.collection_model import CollectionModel
+from embedin.repository.collection_repository import CollectionRepository
 
 
 class TestCollectionRepository(TestCase):

@@ -2,10 +2,10 @@ import unittest
 from datetime import datetime
 from unittest.mock import Mock
 
-from src.model.embedding_model import EmbeddingModel
-from src.repository.collection_repository import CollectionRepository
-from src.repository.embedding_repository import EmbeddingRepository
-from src.service.embedding_service import EmbeddingService
+from embedin.model.embedding_model import EmbeddingModel
+from embedin.repository.collection_repository import CollectionRepository
+from embedin.repository.embedding_repository import EmbeddingRepository
+from embedin.service.embedding_service import EmbeddingService
 
 
 class TestEmbeddingService(unittest.TestCase):

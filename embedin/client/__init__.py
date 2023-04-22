@@ -3,10 +3,10 @@ import logging
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from src.embedding.sentence_transformer import SentenceTransformerEmbedding
-from src.index.hnswlib import HNSWNearestNeighbors
-from src.service.collection_service import CollectionService
-from src.service.embedding_service import EmbeddingService
+from embedin.embedding.sentence_transformer import SentenceTransformerEmbedding
+from embedin.index.hnswlib import HNSWNearestNeighbors
+from embedin.service.collection_service import CollectionService
+from embedin.service.embedding_service import EmbeddingService
 
 # Configure the root logger to output to the console
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',

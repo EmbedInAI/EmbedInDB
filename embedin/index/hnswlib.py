@@ -1,6 +1,6 @@
 import numpy as np
 from hnswlib import Index as HNSWIndex
-from src.index import NearestNeighbors, to_np_array
+from embedin.index import NearestNeighbors, to_np_array
 
 
 class HNSWNearestNeighbors(NearestNeighbors):

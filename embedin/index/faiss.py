@@ -1,6 +1,6 @@
 import faiss
 
-from src.index import NearestNeighbors
+from embedin.index import NearestNeighbors
 
 
 class FaissNearestNeighbors(NearestNeighbors):

@@ -3,8 +3,8 @@ import json
 import uuid
 from datetime import datetime
 
-from src.model.embedding_model import EmbeddingModel
-from src.repository.embedding_repository import EmbeddingRepository
+from embedin.model.embedding_model import EmbeddingModel
+from embedin.repository.embedding_repository import EmbeddingRepository
 
 
 class EmbeddingService:

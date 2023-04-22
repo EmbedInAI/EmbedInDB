@@ -1,6 +1,6 @@
 import unittest
 
-from src.index import to_np_array
+from embedin.index import to_np_array
 
 
 class TestToNpArray(unittest.TestCase):
