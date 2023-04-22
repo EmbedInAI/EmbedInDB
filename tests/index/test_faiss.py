@@ -2,23 +2,23 @@ import unittest
 
 import numpy as np
 
-from hnswlib import Index as HNSWIndex
-from src.nearest_neighbors.hnswlib import HNSWNearestNeighbors
+import faiss
+from src.index.faiss import FaissNearestNeighbors
 
 
-class TestHNSWNearestNeighbors(unittest.TestCase):
+class TestFaissNearestNeighbors(unittest.TestCase):
     def setUp(self):
         self.embeddings = [
             [1, 2, 3],
             [4, 5, 6],
             [7, 8, 9],
         ]
-        self.nn = HNSWNearestNeighbors(self.embeddings)
+        self.nn = FaissNearestNeighbors(self.embeddings)
 
     def test_init(self):
         self.assertTrue(np.array_equal(self.nn.embeddings, np.array(self.embeddings)))
-        self.assertIsInstance(self.nn.index, HNSWIndex)
-        self.assertEqual(self.nn.count, len(self.embeddings))
+        self.assertEqual(len(self.nn.embeddings), len(self.embeddings))
+        self.assertIsInstance(self.nn.index, faiss.IndexFlatIP)
 
     def test_search(self):
         query_embeddings = [1, 1, 1]

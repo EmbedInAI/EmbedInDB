@@ -133,3 +133,9 @@ dmypy.json
 
 # Docker data files
 docker/postgres/data/
+docker/mysql/data/
+docker/mssql/data/
+docker/oracle/data/
+
+# SQLite DB files
+*.db

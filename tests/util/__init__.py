@@ -1,6 +1,6 @@
 import unittest
 
-from src.nearest_neighbors import to_np_array
+from src.index import to_np_array
 
 
 class TestToNpArray(unittest.TestCase):
@@ -13,6 +13,11 @@ class TestToNpArray(unittest.TestCase):
         query_embeddings = [[1, 2, 3]]
         result = to_np_array(query_embeddings)
         assert result.shape == (1, 3)
+
+    def test_to_np_array_two_dims_multiple(self):
+        query_embeddings = [[1, 2, 3], [4, 5, 6]]
+        result = to_np_array(query_embeddings)
+        assert result.shape == (2, 3)
 
 
 if __name__ == '__main__':

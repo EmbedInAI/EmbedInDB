@@ -3,17 +3,42 @@ version: '3.8'
 services:
   embedin-postgres:
     container_name: embedin-postgres
-    image: postgres
+    image: postgres:15.2
     restart: always
-    build:
-      context: ./postgres
-      dockerfile: Dockerfile
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=test_db
+      - POSTGRES_USER=embedin
+      - POSTGRES_PASSWORD=embedin
+      - POSTGRES_DB=embedin_db
     volumes:
       - ./postgres/data:/var/lib/postgresql/data:delegated
     ports:
       - "5432:5432"
+
+  embedin-mysql:
+    container_name: embedin-mysql
+    image: mysql:8.0
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=embedin_db
+      - MYSQL_USER=embedin
+      - MYSQL_PASSWORD=embedin
+    volumes:
+      - ./mysql/data:/var/lib/mysql:delegated
+    ports:
+      - "3306:3306"
+
+  embedin-mssql:
+    container_name: embedin-mssql
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: always
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=StrongPassword123
+      - MSSQL_PID=Developer
+      - MSSQL_TCP_PORT=1433
+    volumes:
+      - ./mssql/data:/var/opt/mssql/data
+    ports:
+      - "1433:1433"

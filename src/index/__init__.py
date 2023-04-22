@@ -1,10 +1,6 @@
 from abc import ABC, abstractmethod
 
-import numpy as np
-
-
-def to_np_array(query_embeddings):
-    return np.array(query_embeddings, dtype=np.float32).reshape(1, -1)
+from src.util import to_np_array
 
 
 class NearestNeighbors(ABC):
@@ -14,9 +10,8 @@ class NearestNeighbors(ABC):
             embeddings: A list of embeddings, where each embedding is a list
             or array of floats.
         """
-        self.embeddings = np.array(embeddings).astype('float32')
+        self.embeddings = to_np_array(embeddings)
         self.index = self._build_index()
-        self.count = self.embeddings.shape[0]
 
     @abstractmethod
     def _build_index(self):
@@ -24,6 +19,10 @@ class NearestNeighbors(ABC):
 
     @abstractmethod
     def _search_index(self, query_embeddings, top_k):
+        pass
+
+    @abstractmethod
+    def update_index(self, embeddings):
         pass
 
     def search(self, query_embeddings, top_k=3):
@@ -40,7 +39,8 @@ class NearestNeighbors(ABC):
            A list of the indices of the nearest neighbors, and a list of their
            corresponding distances.
         """
-        top_k = min(top_k, self.count)
+        count = len(self.embeddings)
+        top_k = min(top_k, count)
         query_embeddings = to_np_array(query_embeddings)
         indices = self._search_index(query_embeddings, top_k)
         return indices

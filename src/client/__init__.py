@@ -1,8 +1,12 @@
-from src.embedding.sentence_transformer import SentenceTransformerEmbedding
-from src.mapper.postgres import Postgres
-from src.mapper.sqlite import SQLite
-from src.nearest_neighbors.hnswlib import HNSWNearestNeighbors
 import logging
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from src.embedding.sentence_transformer import SentenceTransformerEmbedding
+from src.index.hnswlib import HNSWNearestNeighbors
+from src.service.collection_service import CollectionService
+from src.service.embedding_service import EmbeddingService
 
 # Configure the root logger to output to the console
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
@@ -13,49 +17,67 @@ logger = logging.getLogger(__name__)
 
 class Client:
     def __init__(self, collection_name, url=None,
-                 embedding_fn=SentenceTransformerEmbedding()):
+                 embedding_fn=SentenceTransformerEmbedding(), debug=False):
         self.collection_id = None
         self.embedding_fn = embedding_fn
 
-        # TODO: use default memory DB (e.g. SQLite)
         if url is None:
-            self.db = SQLite()
+            engine = create_engine('sqlite:///:memory:', echo=debug)
         else:
-            # TODO: per different url, construct different DB client
-            self.db = Postgres(url)
+            engine = create_engine(url)
 
-        self.create_collection(collection_name)
+        session = sessionmaker(bind=engine)
+        self.session = session()
+
+        self.collection_service = CollectionService(self.session)
+        self.embedding_service = EmbeddingService(self.session)
+
+        collection_id = self.create_or_get_collection(collection_name)
+        self.embeddings = self.embedding_service.get_by_collection_id(collection_id)
+        embeddings = [row.embedding_data for row in self.embeddings]
+
         self.nearest_neighbors = None
-        self.embeddings = self.db.get(collection_id=self.collection_id)
+        if embeddings:
+            self.nearest_neighbors = HNSWNearestNeighbors(embeddings)
+
+    def create_or_get_collection(self, name):
+        collection_id = self.get_collection(name)
+        if not collection_id:
+            collection_id = self.create_collection(name)
+        self.collection_id = collection_id
+        return collection_id
 
     def create_collection(self, name):
-        self.collection_id, _ = self.db.create_collection(name)[0]
+        collection = self.collection_service.create(name)
+        self.collection_id = collection.id
         return self.collection_id
 
     def get_collection(self, name):
-        self.collection_id, _ = self.db.get_collection(name)
-        return self.collection_id
+        collection = self.collection_service.get_by_name(name)
+        if collection:
+            self.collection_id = collection.id
+            return self.collection_id
 
-    def add_data(self, texts, meta_data_list=None):
+    def add_data(self, texts, meta_data=None):
         embeddings = self.embedding_fn(texts)
-        inserted_data = self.db.add(self.collection_id, embeddings, texts)
-        # logger.info("inserted_data: %s", inserted_data)
+        inserted_data = self.embedding_service.add_all(self.collection_id, embeddings, texts, meta_data)
+        logger.info("inserted_data: %s", inserted_data)
 
-        self.embeddings = self.db.get(self.collection_id)
+        self.embeddings += inserted_data
 
-        # TODO - update nearest neighbors search index more efficiently
-        self.nearest_neighbors = HNSWNearestNeighbors(embeddings)
+        inserted_embeddings = [row.embedding_data for row in inserted_data]
+
+        if self.nearest_neighbors is None:
+            self.nearest_neighbors = HNSWNearestNeighbors(embeddings)
+        else:
+            self.nearest_neighbors.update_index(inserted_embeddings)
 
     def query(self, query_texts, top_k=3):
-        if self.nearest_neighbors is None:
-            self.embeddings = self.db.get(self.collection_id)
-            embeddings = [row['embedding_data'] for row in self.embeddings]
-            self.nearest_neighbors = HNSWNearestNeighbors(embeddings)
         if isinstance(query_texts, str):
             query_texts = [query_texts]
         query_embeddings = self.embedding_fn(query_texts)
         indices = self.nearest_neighbors.search(query_embeddings, top_k)
-        matched_embeddings = [{'text': r['text'], 'metadata': r['metadata']}
+        matched_embeddings = [{'text': r.text, 'meta_data': r.meta_data}
                               for i, r in enumerate(self.embeddings)
                               if i in indices]
         return matched_embeddings
