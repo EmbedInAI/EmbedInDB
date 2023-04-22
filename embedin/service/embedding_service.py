@@ -8,10 +8,59 @@ from embedin.repository.embedding_repository import EmbeddingRepository
 
 
 class EmbeddingService:
+    """
+    A service class for handling operations related to embeddings.
+
+    Attributes:
+        embedding_repo (EmbeddingRepository): The repository instance for handling database interactions.
+
+    Methods:
+        add_all(collection_id, embeddings, texts, metadata_list=None):
+            Adds multiple embeddings to the database.
+
+            Args:
+                collection_id (str): The ID of the collection that the embeddings belong to.
+                embeddings (list): A list of embedding vectors, represented as numpy arrays.
+                texts (list): A list of text strings that correspond to the embeddings.
+                metadata_list (list, optional): A list of metadata objects, one for each embedding.
+
+            Returns:
+                list: A list of EmbeddingModel objects representing the newly created embeddings.
+
+        get_by_collection_id(collection_id):
+            Fetches all embeddings from the database for a specified collection ID.
+
+            Args:
+                collection_id (str): The ID of the collection to retrieve embeddings for.
+
+            Returns:
+                list: A list of EmbeddingModel objects representing the embeddings for the specified collection ID.
+    """
+
     def __init__(self, session):
+        """
+        Initializes a new instance of the EmbeddingService class.
+
+        Args:
+            session (Session): A database session object for making database queries.
+        """
+
         self.embedding_repo = EmbeddingRepository(session)
 
     def add_all(self, collection_id, embeddings, texts, metadata_list=None):
+        """
+        Adds multiple embeddings to the database.
+
+        Args:
+            collection_id (str): The ID of the collection that the embeddings belong to.
+            embeddings (list): A list of embedding vectors, represented as numpy arrays.
+            texts (list): A list of text strings that correspond to the embeddings.
+            metadata_list (list, optional): A list of metadata objects, one for each embedding.
+
+        Returns:
+            list: A list of EmbeddingModel objects representing the newly created embeddings.
+        """
+
         # Generate a list of Embedding objects
         rows = []
         for i, embedding in enumerate(embeddings):
@@ -42,6 +91,16 @@ class EmbeddingService:
         return inserted_rows
 
     def get_by_collection_id(self, collection_id):
+        """
+        Fetches all embeddings from the database for a specified collection ID.
+
+        Args:
+            collection_id (str): The ID of the collection to retrieve embeddings for.
+
+        Returns:
+            list: A list of EmbeddingModel objects representing the embeddings for the specified collection ID.
+        """
+
         # Get the Embedding objects for the specified collection_id
         rows = self.embedding_repo.get_by_collection_id(collection_id)
 

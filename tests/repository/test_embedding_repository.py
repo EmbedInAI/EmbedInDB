@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 from embedin.model.embedding_model import EmbeddingModel, Base
 from embedin.repository.embedding_repository import EmbeddingRepository
 
-engine = create_engine('sqlite:///:memory:', echo=True)
+engine = create_engine("sqlite:///:memory:", echo=True)
 Session = sessionmaker(bind=engine)
 
 
@@ -136,4 +136,3 @@ class TestEmbeddingRepository(TestCase):
         self.assertEqual(rows[1].meta_data, {"key2": "value2"})
         self.assertEqual(rows[1].hash, "hash2")
         self.assertIsInstance(rows[1].created_at, datetime)
-
