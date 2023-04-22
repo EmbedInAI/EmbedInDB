@@ -37,13 +37,17 @@ class EmbeddingRepository:
     # This is only needed when bulk add in add_all is implemented
     def get_by_ids(self, ids):
         # Get the successfully inserted data
-        rows = self.session.query(EmbeddingModel).filter(
-            EmbeddingModel.id.in_(ids)).all()
+        rows = (
+            self.session.query(EmbeddingModel).filter(EmbeddingModel.id.in_(ids)).all()
+        )
 
         return rows
 
     def get_by_collection_id(self, collection_id):
-        rows = self.session.query(EmbeddingModel).filter(
-            EmbeddingModel.collection_id == collection_id).all()
+        rows = (
+            self.session.query(EmbeddingModel)
+            .filter(EmbeddingModel.collection_id == collection_id)
+            .all()
+        )
 
         return rows

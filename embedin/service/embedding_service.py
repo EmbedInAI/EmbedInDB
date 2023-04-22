@@ -32,7 +32,7 @@ class EmbeddingService:
                 embedding_data=embedding,  # json.dumps(embedding),
                 meta_data=meta_data,
                 hash=hashed,
-                created_at=datetime.now()
+                created_at=datetime.now(),
             )
             rows.append(row)
 
