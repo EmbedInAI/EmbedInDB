@@ -24,8 +24,10 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-          pip install coverage
+          pip install -r requirements-dev.txt
 
+      - name: Check code style
+        run: black --check .
 
       - name: Run tests with coverage
         run: |

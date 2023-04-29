@@ -18,30 +18,30 @@ logger = logging.getLogger(__name__)
 
 class Client:
     """
-        Client class for managing embeddings and performing nearest neighbor search.
+    Client class for managing embeddings and performing nearest neighbor search.
 
-        Args:
-            collection_name (str): Name of the collection.
-            url (str, optional): Database URL. Defaults to None.
-            embedding_fn (EmbeddingFunction, optional): Embedding function to use. Defaults to SentenceTransformerEmbedding().
-            debug (bool, optional): Enable debug mode. Defaults to False.
+    Args:
+        collection_name (str): Name of the collection.
+        url (str, optional): Database URL. Defaults to None.
+        embedding_fn (EmbeddingFunction, optional): Embedding function to use. Defaults to SentenceTransformerEmbedding().
+        debug (bool, optional): Enable debug mode. Defaults to False.
 
-        Attributes:
-            collection_id (int): ID of the collection.
-            embedding_fn (EmbeddingFunction): Embedding function to use.
-            session (Session): SQLAlchemy session.
-            collection_service (CollectionService): CollectionService instance.
-            embedding_service (EmbeddingService): EmbeddingService instance.
-            embeddings (List[Embedding]): List of Embedding instances for the current collection.
-            nearest_neighbors (HNSWNearestNeighbors): HNSW nearest neighbor index for the current collection.
+    Attributes:
+        collection_id (int): ID of the collection.
+        embedding_fn (EmbeddingFunction): Embedding function to use.
+        session (Session): SQLAlchemy session.
+        collection_service (CollectionService): CollectionService instance.
+        embedding_service (EmbeddingService): EmbeddingService instance.
+        embeddings (List[Embedding]): List of Embedding instances for the current collection.
+        nearest_neighbors (HNSWNearestNeighbors): HNSW nearest neighbor index for the current collection.
 
-        Methods:
-            create_or_get_collection(name): Get the ID of an existing collection or create a new one.
-            create_collection(name): Create a new collection with the given name.
-            get_collection(name): Get the ID of an existing collection with the given name.
-            add_data(texts, meta_data=None): Add new data to the collection.
-            query(query_texts, top_k=3): Find nearest neighbors for the given query text(s).
-        """
+    Methods:
+        create_or_get_collection(name): Get the ID of an existing collection or create a new one.
+        create_collection(name): Create a new collection with the given name.
+        get_collection(name): Get the ID of an existing collection with the given name.
+        add_data(texts, meta_data=None): Add new data to the collection.
+        query(query_texts, top_k=3): Find nearest neighbors for the given query text(s).
+    """
 
     def __init__(
         self,
