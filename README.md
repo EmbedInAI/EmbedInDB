@@ -1,6 +1,9 @@
-# Embedin
+# Embedin - Enhancing AI with persistent memory
 [![PyPI](https://img.shields.io/pypi/v/embedin?label=embedin)](https://pypi.org/project/embedin/)
 [![Coverage Status](https://coveralls.io/repos/github/EmbedInAI/EmbedInDB/badge.svg)](https://coveralls.io/github/EmbedInAI/EmbedInDB)
+
+## What is Embedin
+Embedin is a lightweight vector database that can integrate with popular databases like MySQL, PostgreSQL, and MS SQL Server. With fast indexing and retrieval, it's ideal for high-performance applications such as natural language processing, image recognition, and recommendation systems. Embedin's simple API and query language make it easy to use and integrate. 
 
 ## Installation
 ```bash
