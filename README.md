@@ -8,7 +8,7 @@ pip install embedin
 ```
 
 ## Quick Start
-### Using memery DB
+### Using memory DB
 ```python
 from embedin.client import Client
 

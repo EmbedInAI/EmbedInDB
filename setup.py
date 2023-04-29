@@ -4,7 +4,9 @@ import setuptools
 
 
 def read(fname):
-    with open(os.path.join(os.path.dirname(__file__), fname), "r", encoding="utf-8") as fh:
+    with open(
+        os.path.join(os.path.dirname(__file__), fname), "r", encoding="utf-8"
+    ) as fh:
         return fh.read()
 
 
@@ -25,5 +27,5 @@ setuptools.setup(
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.6',
+    python_requires=">=3.6",
 )
