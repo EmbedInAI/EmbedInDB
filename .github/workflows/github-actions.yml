@@ -29,9 +29,9 @@ jobs:
       - name: Check code style
         run: black --check .
 
-      - name: Run tests with coverage
+      - name: Run tests and upload coverage data to coveralls.io
         run: |
           coverage run --source=embedin -m unittest discover -s tests -p '*.py'
-          coveralls --service=github
+          curl -sL https://coveralls.io/coveralls-linux.tar.gz | tar -xz && ./coveralls
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
