@@ -32,6 +32,6 @@ jobs:
       - name: Run tests with coverage
         run: |
           coverage run --source=embedin -m unittest discover -s tests -p '*.py'
-          coveralls debug --service=github
+          coveralls --service=github
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
