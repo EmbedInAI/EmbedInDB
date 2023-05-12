@@ -1,9 +1,11 @@
 import numpy as np
-from hnswlib import Index as HNSWIndex
-from embedin.index import NearestNeighbors, to_np_array
+from hnswlib import Index
+
+from embedin.index.index_base import IndexBase
+from embedin.util import to_np_array
 
 
-class HNSWNearestNeighbors(NearestNeighbors):
+class HNSWIndex(IndexBase):
     """
     This class implements a nearest neighbors search with HNSW algorithm using cosine similarity metric.
     Inherits from the abstract class 'NearestNeighbors'.
@@ -16,17 +18,22 @@ class HNSWNearestNeighbors(NearestNeighbors):
 
         Returns:
         -------
-        index: HNSWIndex
+        index: Index
             The index built using HNSW algorithm.
         """
 
-        # TODO: double check all those magic numbers
-        index = HNSWIndex("cosine", self.embeddings.shape[1])
+        # M - vertex nearest neighbors, affect index size linearly
+        # ef_construction - depth of search during build
+
+        ef_search = 128  # depth of search during search
+        d = self.embeddings.shape[1]  # dimension
+
+        index = Index("cosine", d)
         index.init_index(
-            max_elements=self.embeddings.shape[0], ef_construction=100, M=16
+            max_elements=self.embeddings.shape[0], ef_construction=64, M=32
         )
         index.add_items(self.embeddings)
-        index.set_ef(100)
+        index.set_ef(ef_search)
         return index
 
     def update_index(self, embeddings):
@@ -64,5 +71,5 @@ class HNSWNearestNeighbors(NearestNeighbors):
             Array of indices representing the nearest embeddings to the given query embeddings.
         """
 
-        indices, _ = self.index.knn_query(query_embeddings, k=top_k)
-        return indices[0]
+        indices, distances = self.index.knn_query(query_embeddings, k=top_k)
+        return indices

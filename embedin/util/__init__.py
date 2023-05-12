@@ -3,7 +3,7 @@ import numpy as np
 
 def to_np_array(embeddings):
     """
-    Convert a list of embeddings to a numpy array.
+    Convert a list of embeddings to a numpy array with float32 type.
 
     Args:
         embeddings (list): A list of embeddings, where each element is a number or
@@ -23,8 +23,11 @@ def to_np_array(embeddings):
         array([[1, 2, 3],
                [4, 5, 6]])
     """
-    # Convert the input list to a numpy array
-    embeddings_array = np.array(embeddings)
+    if isinstance(embeddings, np.ndarray):
+        embeddings_array = embeddings
+    else:
+        # Convert the input list to a numpy array
+        embeddings_array = np.array(embeddings)
 
     # If the array has only one dimension, add an extra dimension to represent a single example
     if len(embeddings_array.shape) == 1:
@@ -33,4 +36,4 @@ def to_np_array(embeddings):
     if len(embeddings) == 0:
         raise ValueError("Input list cannot be empty")
 
-    return embeddings_array
+    return embeddings_array.astype("float32")
