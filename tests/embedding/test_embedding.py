@@ -28,6 +28,10 @@ class TestSentenceTransformerEmbedding(unittest.TestCase):
         with self.assertRaises(TypeError):
             embedding(invalid_input)
 
+        invalid_input = [123, "string"]
+        with self.assertRaises(TypeError):
+            embedding(invalid_input)
+
 
 if __name__ == "__main__":
     unittest.main()

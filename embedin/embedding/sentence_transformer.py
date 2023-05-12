@@ -42,7 +42,8 @@ class SentenceTransformerEmbedding(Embedding):
         if isinstance(texts, str):
             return self.model.encode([texts], convert_to_numpy=True).tolist()
         # Check if texts is a list of strings
-        elif all(isinstance(text, str) for text in texts):
-            return self.model.encode(texts, convert_to_numpy=True).tolist()
-        else:
+        if isinstance(texts, list):
+            if all(isinstance(text, str) for text in texts):
+                return self.model.encode(texts, convert_to_numpy=True).tolist()
             raise TypeError("Input must be a string, a list of strings")
+        raise TypeError("Input must be a string, a list of strings")
