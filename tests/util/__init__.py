@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from embedin.index import to_np_array
+from embedin.util import to_np_array
 
 
 class TestToNpArray(unittest.TestCase):
