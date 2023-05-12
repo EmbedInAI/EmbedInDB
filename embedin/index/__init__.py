@@ -4,9 +4,9 @@ from embedin.index.hnsw_index import HNSWIndex
 
 class Index:
     def __init__(self, embeddings, index_hint=None):
-        if index_hint == 'hnsw':
+        if index_hint == "hnsw":
             self.index = HNSWIndex(embeddings)
-        elif index_hint == 'flat':
+        elif index_hint == "flat":
             self.index = FlatIndex(embeddings)
         elif len(embeddings) > 10 ** 6:
             self.index = HNSWIndex(embeddings)
@@ -19,4 +19,3 @@ class Index:
     def update_index(self, embeddings):
         self.index.update_index(embeddings)
         # TODO: switch index when exceeding 10 ** 6
-
