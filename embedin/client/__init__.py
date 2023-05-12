@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from embedin.embedding.sentence_transformer import SentenceTransformerEmbedding
-from embedin.index.hnswlib import HNSWNearestNeighbors
+from embedin.index import Index
 from embedin.service.collection_service import CollectionService
 from embedin.service.embedding_service import EmbeddingService
 
@@ -24,6 +24,7 @@ class Client:
         collection_name (str): Name of the collection.
         url (str, optional): Database URL. Defaults to None.
         embedding_fn (EmbeddingFunction, optional): Embedding function to use. Defaults to SentenceTransformerEmbedding().
+        index_hint (str, optional): Similarity search index to use. Supports: 'flat' and 'hnsw'
         debug (bool, optional): Enable debug mode. Defaults to False.
 
     Attributes:
@@ -32,8 +33,7 @@ class Client:
         session (Session): SQLAlchemy session.
         collection_service (CollectionService): CollectionService instance.
         embedding_service (EmbeddingService): EmbeddingService instance.
-        embeddings (List[Embedding]): List of Embedding instances for the current collection.
-        nearest_neighbors (HNSWNearestNeighbors): HNSW nearest neighbor index for the current collection.
+        embedding_rows (List[EmbeddingModel]): List of Embedding instances for the current collection.
 
     Methods:
         create_or_get_collection(name): Get the ID of an existing collection or create a new one.
@@ -48,6 +48,7 @@ class Client:
         collection_name,
         url=None,
         embedding_fn=SentenceTransformerEmbedding(),
+        index_hint=None,
         debug=False,
     ):
         self.collection_id = None
@@ -65,12 +66,13 @@ class Client:
         self.embedding_service = EmbeddingService(self.session)
 
         collection_id = self.create_or_get_collection(collection_name)
-        self.embeddings = self.embedding_service.get_by_collection_id(collection_id)
-        embeddings = [row.embedding_data for row in self.embeddings]
+        self.embedding_rows = self.embedding_service.get_by_collection_id(collection_id)
+        embeddings = [row.embedding_data for row in self.embedding_rows]
 
-        self.nearest_neighbors = None
+        self.index_hint = index_hint
+        self.search_index = None
         if embeddings:
-            self.nearest_neighbors = HNSWNearestNeighbors(embeddings)
+            self.search_index = Index(embeddings, self.index_hint)
 
     def create_or_get_collection(self, name):
         """
@@ -134,14 +136,14 @@ class Client:
         )
         logger.info("inserted_data: %s", inserted_data)
 
-        self.embeddings += inserted_data
+        self.embedding_rows += inserted_data
 
         inserted_embeddings = [row.embedding_data for row in inserted_data]
 
-        if self.nearest_neighbors is None:
-            self.nearest_neighbors = HNSWNearestNeighbors(embeddings)
+        if self.search_index is None:
+            self.search_index = Index(embeddings, self.index_hint)
         else:
-            self.nearest_neighbors.update_index(inserted_embeddings)
+            self.search_index.update_index(inserted_embeddings)
 
     def query(self, query_texts, top_k=3):
         """
@@ -159,10 +161,10 @@ class Client:
         if isinstance(query_texts, str):
             query_texts = [query_texts]
         query_embeddings = self.embedding_fn(query_texts)
-        indices = self.nearest_neighbors.search(query_embeddings, top_k)
+        indices = self.search_index.search(query_embeddings, top_k)
         matched_embeddings = [
             {"text": r.text, "meta_data": r.meta_data}
-            for i, r in enumerate(self.embeddings)
+            for i, r in enumerate(self.embedding_rows)
             if i in indices
         ]
         return matched_embeddings

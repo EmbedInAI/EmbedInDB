@@ -1,13 +1,17 @@
 import unittest
 from unittest.mock import MagicMock
+
+import numpy as np
+
 from embedin.client import Client
+from embedin.index import Index
 
 
 class TestClient(unittest.TestCase):
     def setUp(self):
         self.client = Client(
             collection_name="test_collection",
-            embedding_fn=MagicMock(return_value=[[1, 2, 3], [4, 5, 6]]),
+            embedding_fn=MagicMock(return_value=[[1, 2, 3]]),
         )
 
     def test_create_or_get_collection(self):
@@ -30,12 +34,17 @@ class TestClient(unittest.TestCase):
         # Test that data is added to the collection
         texts = ["text1", "text2"]
         meta_data = [{"meta1": "value1"}, {"meta2": "value2"}]
+
+        self.client.embedding_fn = MagicMock(return_value=[[1, 2, 3], [4, 5, 6]])
         self.client.add_data(texts, meta_data)
-        self.assertEqual(len(self.client.embeddings), 2)
+        self.assertEqual(len(self.client.embedding_rows), 2)
 
     def test_query(self):
         # Test that queries return the expected results
+        self.client.embedding_fn = MagicMock(return_value=[[1, 2, 3], [4, 5, 6]])
         self.client.add_data(["test", "text"])
+
+        self.client.embedding_fn = MagicMock(return_value=[[1, 2, 3]])
         result = self.client.query("test", top_k=1)
         expected_result = [{"text": "test", "meta_data": None}]
         self.assertEqual(result, expected_result)
