@@ -9,7 +9,7 @@ from embedin.index.flat_index import FlatIndex
 class TestFlatIndex(unittest.TestCase):
     def setUp(self):
         d = 64  # dimension
-        nb = 10 ** 5  # database size
+        nb = 10**5  # database size
         nq = 10  # nb of queries
         np.random.seed(1234)  # make reproducible
         self.xb = np.random.random((nb, d)).astype("float32")

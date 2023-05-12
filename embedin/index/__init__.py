@@ -8,7 +8,7 @@ class Index:
             self.index = HNSWIndex(embeddings)
         elif index_hint == "flat":
             self.index = FlatIndex(embeddings)
-        elif len(embeddings) > 10 ** 6:
+        elif len(embeddings) > 10**6:
             self.index = HNSWIndex(embeddings)
         else:
             self.index = FlatIndex(embeddings)

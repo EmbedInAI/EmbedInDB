@@ -17,12 +17,12 @@ class TestIndex(unittest.TestCase):
         self.assertIsInstance(index.index, FlatIndex)
 
         # Test when embeddings length is less than or equal to 10^6
-        embeddings = np.random.random((10 ** 6 - 1, 3)).astype("float32")
+        embeddings = np.random.random((10**6 - 1, 3)).astype("float32")
         index = Index(embeddings)
         self.assertIsInstance(index.index, FlatIndex)
 
         # Test when embeddings length is greater than 10^6
-        embeddings = np.random.random((10 ** 6 + 1, 3)).astype("float32")
+        embeddings = np.random.random((10**6 + 1, 3)).astype("float32")
         index = Index(embeddings)
         self.assertIsInstance(index.index, HNSWIndex)
 
