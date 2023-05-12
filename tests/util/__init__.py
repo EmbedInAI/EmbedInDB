@@ -6,10 +6,23 @@ from embedin.util import to_np_array
 
 
 class TestToNpArray(unittest.TestCase):
-    def test_to_np_array_zero_dim(self):
+    def test_to_np_array_none_input(self):
+        query_embeddings = None
+        with self.assertRaises(ValueError):
+            to_np_array(query_embeddings)
+
+    def test_to_np_array_empty_list(self):
         query_embeddings = []
         with self.assertRaises(ValueError):
-            result = to_np_array(query_embeddings)
+            to_np_array(query_embeddings)
+
+        query_embeddings = [[]]
+        with self.assertRaises(ValueError):
+            to_np_array(query_embeddings)
+
+        query_embeddings = [[], []]
+        with self.assertRaises(ValueError):
+            to_np_array(query_embeddings)
 
     def test_to_np_array_one_dim(self):
         query_embeddings = [1, 2, 3]

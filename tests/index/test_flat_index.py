@@ -30,6 +30,14 @@ class TestFlatIndex(unittest.TestCase):
         self.assertIsInstance(self.nn.index, IndexFlatIP)
         self.assertEqual(self.nn.index.ntotal, len(self.xb))
 
+    def test_build_index(self):
+        index = self.nn._build_index()
+        self.assertTrue(isinstance(index, IndexFlatIP))
+
+    def test_search_index(self):
+        indices = self.nn._search_index(self.xq, top_k=10)
+        self.assertTrue(np.array_equal(indices[0], self.gold_answer))
+
     def test_search(self):
         indices = self.nn.search(self.xq, top_k=10)
         self.assertTrue(np.array_equal(indices[0], self.gold_answer))
@@ -61,3 +69,7 @@ class TestFlatIndex(unittest.TestCase):
         new_embeddings = None
         self.nn.update_index(new_embeddings)
         self.assertEqual(self.nn.index.ntotal, count)
+
+    def test_get_embeddings(self):
+        embeddings = self.nn.get_embeddings()
+        self.assertTrue(np.array_equal(embeddings, np.array(self.xb)))

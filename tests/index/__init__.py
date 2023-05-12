@@ -26,6 +26,11 @@ class TestIndex(unittest.TestCase):
         index = Index(embeddings)
         self.assertIsInstance(index.index, HNSWIndex)
 
+        # Test when embeddings is None
+        embeddings = np.random.random((4, 3)).astype("float32")
+        index = Index(embeddings)
+        self.assertIsInstance(index.index, FlatIndex)
+
     def test_search(self):
         # Test search method with top_k=3
         embeddings = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype="float32")

@@ -1,13 +1,14 @@
 import numpy as np
 
 
-def to_np_array(embeddings):
+def to_np_array(embeddings, dtype="float32"):
     """
-    Convert a list of embeddings to a numpy array with float32 type.
+    Convert a list of embeddings to a numpy array.
 
     Args:
         embeddings (list): A list of embeddings, where each element is a number or
         a list of numbers.
+        dtype (string): Data type of the array
 
     Returns:
         numpy.ndarray: A 2D numpy array of shape (num_examples, embedding_size), where
@@ -21,19 +22,21 @@ def to_np_array(embeddings):
         >>> embeddings_list = [[1,2,3],[4,5,6]]
         >>> to_np_array(embeddings_list)
         array([[1, 2, 3],
-               [4, 5, 6]])
+               [4, 5, 6]], dtype=float32)
     """
-    if isinstance(embeddings, np.ndarray):
-        embeddings_array = embeddings
-    else:
-        # Convert the input list to a numpy array
-        embeddings_array = np.array(embeddings)
-
-    # If the array has only one dimension, add an extra dimension to represent a single example
-    if len(embeddings_array.shape) == 1:
-        embeddings_array = embeddings_array[np.newaxis, :]
+    if embeddings is None:
+        raise ValueError("Input list cannot be None.")
 
     if len(embeddings) == 0:
+        raise ValueError("Input list cannot contain empty list")
+
+    embeddings_array = np.array(embeddings, dtype=dtype)
+
+    if embeddings_array.size == 0:
         raise ValueError("Input list cannot be empty")
 
-    return embeddings_array.astype("float32")
+    # If the array has only one dimension, add an extra dimension
+    if len(embeddings_array.shape) == 1:
+        embeddings_array = np.expand_dims(embeddings_array, axis=0)
+
+    return embeddings_array
