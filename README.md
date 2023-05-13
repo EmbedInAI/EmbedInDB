@@ -18,8 +18,6 @@ from embedin.client import Client
 client = Client(collection_name="test_collection")
 client.add_data(texts=["This is a test"], meta_data=[{"source": "abc4"}])
 result = client.query("These are tests", top_k=1)
-
-print("result: ", result)
 ```
 
 ### Using sqlite with local storage
@@ -38,7 +36,7 @@ import os
 
 from embedin.client import Client
 
-url = os.environ.get('EMBEDIN_POSGRES_URL', "postgresql+psycopg2://embedin:embedin@localhost/embedin_db")
+url = os.getenv('EMBEDIN_POSGRES_URL', "postgresql+psycopg2://embedin:embedin@localhost/embedin_db")
 client = Client(collection_name="test_collection", url=url)
 client.add_data(texts=["This is a test"], meta_data=[{"source": "abc4"}])
 result = client.query("These are tests", top_k=1)
@@ -50,7 +48,7 @@ import os
 
 from embedin.client import Client
 
-url = os.environ.get('EMBEDIN_MYSQL_URL', "mysql+pymysql://embedin:embedin@localhost/embedin_db")
+url = os.getenv('EMBEDIN_MYSQL_URL', "mysql+pymysql://embedin:embedin@localhost/embedin_db")
 client = Client(collection_name="test_collection", url=url)
 client.add_data(texts=["This is a test"], meta_data=[{"source": "abc4"}])
 result = client.query("These are tests", top_k=1)
@@ -62,7 +60,7 @@ import os
 
 from embedin.client import Client
 
-url = os.environ.get('EMBEDIN_MSSQL_URL', "mssql+pymssql://sa:StrongPassword123@localhost/tempdb")
+url = os.getenv('EMBEDIN_MSSQL_URL', "mssql+pymssql://sa:StrongPassword123@localhost/tempdb")
 client = Client(collection_name="test_collection", url=url)
 client.add_data(texts=["This is a test"], meta_data=[{"source": "abc4"}])
 result = client.query("These are tests", top_k=1)

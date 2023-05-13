@@ -1,26 +1,24 @@
 import unittest
 from unittest.mock import MagicMock
 
-import numpy as np
-
 from embedin.client import Client
-from embedin.index import Index
 
 
 class TestClient(unittest.TestCase):
     def setUp(self):
-        self.client = Client(
-            collection_name="test_collection",
-            embedding_fn=MagicMock(return_value=[[1, 2, 3]]),
-        )
+        self.client = Client("test_collection")
 
     def test_create_or_get_collection(self):
-        collection_id = self.client.create_or_get_collection("new_collection")
+        name = "test_collection"
+        collection_id = self.client.create_or_get_collection(name)
+        self.assertIsNotNone(collection_id)
         self.assertEqual(self.client.collection_id, collection_id)
 
     def test_create_collection(self):
         # Test that a collection is created with the given name
-        collection_id = self.client.create_collection("new_collection")
+        name = "new_collection"
+        collection_id = self.client.create_collection(name)
+        self.assertIsNotNone(collection_id)
         self.assertEqual(self.client.collection_id, collection_id)
 
     def test_get_collection(self):
@@ -28,6 +26,7 @@ class TestClient(unittest.TestCase):
         collection_name = "new_collection"
         self.client.create_collection(collection_name)
         collection_id = self.client.get_collection(collection_name)
+        self.assertIsNotNone(collection_id)
         self.assertEqual(self.client.collection_id, collection_id)
 
     def test_add_data(self):
@@ -37,6 +36,8 @@ class TestClient(unittest.TestCase):
 
         self.client.embedding_fn = MagicMock(return_value=[[1, 2, 3], [4, 5, 6]])
         self.client.add_data(texts, meta_data)
+
+        self.client.embedding_fn.assert_called_once_with(texts)
         self.assertEqual(len(self.client.embedding_rows), 2)
 
     def test_query(self):

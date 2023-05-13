@@ -1,9 +1,9 @@
 from sentence_transformers import SentenceTransformer
 
-from embedin.embedding import Embedding
+from embedin.embedding.embedding_base import EmbeddingBase
 
 
-class SentenceTransformerEmbedding(Embedding):
+class SentenceTransformerEmbedding(EmbeddingBase):
     """
     A class for generating text embeddings using the SentenceTransformer model.
 
@@ -18,14 +18,14 @@ class SentenceTransformerEmbedding(Embedding):
     embeddings (list): A list of embeddings generated for the input text(s). Each embedding is a list of float values.
     """
 
-    def __init__(self, model_name="all-MiniLM-L6-v2"):
+    def __init__(self, model="all-MiniLM-L6-v2"):
         """
         Initialize a SentenceTransformerEmbedding object.
 
         Args:
         model_name (str): The name or path of the SentenceTransformer model to be used for generating embeddings. Default is "all-MiniLM-L6-v2".
         """
-        self.model = SentenceTransformer(model_name)
+        self.model = SentenceTransformer(model)
 
     def __call__(self, texts):
         """

@@ -3,7 +3,7 @@ import logging
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from embedin.embedding.sentence_transformer import SentenceTransformerEmbedding
+from embedin.embedding import Embedding
 from embedin.index import Index
 from embedin.service.collection_service import CollectionService
 from embedin.service.embedding_service import EmbeddingService
@@ -23,13 +23,13 @@ class Client:
     Args:
         collection_name (str): Name of the collection.
         url (str, optional): Database URL. Defaults to None.
-        embedding_fn (EmbeddingFunction, optional): Embedding function to use. Defaults to SentenceTransformerEmbedding().
+        embedding_fn (str or EmbeddingFunction, optional): The embedding function to use. The default is the SentenceTransformer model. Supported options are 'sentence_transformer' and 'openai'. If 'openai' is selected, the 'OPENAI_API_KEY' environment variable must be set to authenticate with the OpenAI API.
         index_hint (str, optional): Similarity search index to use. Supports: 'flat' and 'hnsw'
         debug (bool, optional): Enable debug mode. Defaults to False.
 
     Attributes:
         collection_id (int): ID of the collection.
-        embedding_fn (EmbeddingFunction): Embedding function to use.
+        embedding_fn (str or EmbeddingFunction): Embedding function to use. Support 'sentence_transformer' and 'openai'.
         session (Session): SQLAlchemy session.
         collection_service (CollectionService): CollectionService instance.
         embedding_service (EmbeddingService): EmbeddingService instance.
@@ -47,12 +47,16 @@ class Client:
         self,
         collection_name,
         url=None,
-        embedding_fn=SentenceTransformerEmbedding(),
+        embedding_fn="sentence_transformer",
         index_hint=None,
         debug=False,
     ):
         self.collection_id = None
-        self.embedding_fn = embedding_fn
+
+        if callable(embedding_fn):
+            self.embedding_fn = embedding_fn
+        else:
+            self.embedding_fn = Embedding.create_embedding(embedding_fn)
 
         if url is None:
             engine = create_engine("sqlite:///:memory:", echo=debug)
