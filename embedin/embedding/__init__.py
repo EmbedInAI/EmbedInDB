@@ -36,8 +36,7 @@ class Embedding:
             return OpenAIEmbedding(api_key=api_key)
         elif model_type == "sentence_transformer":
             return SentenceTransformerEmbedding()
-        else:
-            raise ValueError("Unsupported model type: {}".format(model_type))
+        raise ValueError("Unsupported model type: {}".format(model_type))
 
     def __call__(self, texts):
         """
