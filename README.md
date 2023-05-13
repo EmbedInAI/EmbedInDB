@@ -3,7 +3,9 @@
 [![Coverage Status](https://coveralls.io/repos/github/EmbedInAI/EmbedInDB/badge.svg)](https://coveralls.io/github/EmbedInAI/EmbedInDB)
 
 ## What is Embedin
-Embedin is a lightweight vector database that can integrate with popular databases like MySQL, PostgreSQL, and MS SQL Server. With fast indexing and retrieval, it's ideal for high-performance applications such as natural language processing, image recognition, and recommendation systems. Embedin's simple API and query language make it easy to use and integrate. 
+Embedin is a highly efficient software library designed to seamlessly convert widely-used databases, such as MySQL, PostgreSQL, and MS SQL Server, into a vector database with minimal effort. Its lightweight design enables quick and easy integration into your existing software stack, allowing you to leverage the benefits of a vector database without the need for extensive modifications to your current system. 
+
+With fast indexing and retrieval, it's ideal for high-performance applications such as natural language processing, image recognition, and recommendation systems. Embedin's simple API and query language make it easy to use and integrate. 
 
 ## Installation
 ```bash
