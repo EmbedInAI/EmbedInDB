@@ -13,22 +13,21 @@ pip install embedin
 ```
 
 ## Quick Start
-### Using memory DB
+### Using memory
 ```python
 from embedin.client import Client
 
-client = Client(collection_name="test_collection")
-client.add_data(texts=["This is a test"], meta_data=[{"source": "abc4"}])
+client = Client(collection_name="test_collection", texts=["This is a test", "Hello world!"])
 result = client.query("These are tests", top_k=1)
+print(result)
 ```
 
-### Using sqlite with local storage
+### Using Sqlite
 ```python
 from embedin.client import Client
 
 url = 'sqlite:///test.db'
-client = Client(collection_name="test_collection", url=url)
-client.add_data(texts=["This is a test"], meta_data=[{"source": "abc4"}])
+client = Client(collection_name="test_collection", texts=["This is a test", "Hello world!"])
 result = client.query("These are tests", top_k=1)
 ```
 
@@ -39,8 +38,7 @@ import os
 from embedin.client import Client
 
 url = os.getenv('EMBEDIN_POSGRES_URL', "postgresql+psycopg2://embedin:embedin@localhost/embedin_db")
-client = Client(collection_name="test_collection", url=url)
-client.add_data(texts=["This is a test"], meta_data=[{"source": "abc4"}])
+client = Client(collection_name="test_collection", texts=["This is a test", "Hello world!"])
 result = client.query("These are tests", top_k=1)
 ```
 
@@ -51,8 +49,7 @@ import os
 from embedin.client import Client
 
 url = os.getenv('EMBEDIN_MYSQL_URL', "mysql+pymysql://embedin:embedin@localhost/embedin_db")
-client = Client(collection_name="test_collection", url=url)
-client.add_data(texts=["This is a test"], meta_data=[{"source": "abc4"}])
+client = Client(collection_name="test_collection", texts=["This is a test", "Hello world!"])
 result = client.query("These are tests", top_k=1)
 ```
 

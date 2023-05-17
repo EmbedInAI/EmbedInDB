@@ -63,6 +63,7 @@ class EmbeddingService:
 
         # Generate a list of Embedding objects
         rows = []
+        hash_value_set = set()
         for i, embedding in enumerate(embeddings):
             # Generate a UUID for the embedding
             emb_id = str(uuid.uuid4())
@@ -71,6 +72,9 @@ class EmbeddingService:
             data = texts[i] + collection_id + json.dumps(meta_data)
 
             hashed = hashlib.sha256(data.encode()).hexdigest()
+            if hashed in hash_value_set:
+                continue
+            hash_value_set.add(hashed)
 
             # Construct an Embedding object
             # TODO: should not call model class directly in service class

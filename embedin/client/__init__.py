@@ -50,6 +50,7 @@ class Client:
         embedding_fn="sentence_transformer",
         index_hint=None,
         debug=False,
+        **kwargs
     ):
         self.collection_id = None
 
@@ -69,14 +70,35 @@ class Client:
         self.collection_service = CollectionService(self.session)
         self.embedding_service = EmbeddingService(self.session)
 
-        collection_id = self.create_or_get_collection(collection_name)
-        self.embedding_rows = self.embedding_service.get_by_collection_id(collection_id)
-        embeddings = [row.embedding_data for row in self.embedding_rows]
+        embeddings = kwargs.get("embeddings")
+        embeddings_meta = kwargs.get("meta")
+        texts = kwargs.get("texts")
+
+        self.collection_id = self.create_or_get_collection(collection_name)
+        self.embedding_rows = self.embedding_service.get_by_collection_id(
+            self.collection_id
+        )
+
+        # Insert user-provided texts and embeddings into the database
+        inserted_rows = []
+        if embeddings is not None and texts is not None:
+            # TODO validate embeddings' shape and dtype; validate text as well
+            inserted_rows = self.embedding_service.add_all(
+                self.collection_id, embeddings, texts, embeddings_meta
+            )
+        elif texts is not None:
+            embeddings = self.embedding_fn(texts)
+            inserted_rows = self.embedding_service.add_all(
+                self.collection_id, embeddings, texts, embeddings_meta
+            )
+
+        self.embedding_rows.extend(inserted_rows)
+        total_embeddings = [row.embedding_data for row in self.embedding_rows]
 
         self.index_hint = index_hint
         self.search_index = None
-        if embeddings:
-            self.search_index = Index(embeddings, self.index_hint)
+        if total_embeddings:
+            self.search_index = Index(total_embeddings, self.index_hint)
 
     def create_or_get_collection(self, name):
         """
@@ -86,7 +108,7 @@ class Client:
             name (str): Name of the collection.
 
         Returns:
-            int: ID of the collection.
+            str: ID of the collection.
         """
         collection_id = self.get_collection(name)
         if not collection_id:
@@ -102,7 +124,7 @@ class Client:
             name (str): Name of the collection.
 
         Returns:
-            int: ID of the new collection.
+            str: ID of the new collection.
         """
         collection = self.collection_service.create(name)
         self.collection_id = collection.id
@@ -116,7 +138,7 @@ class Client:
             name (str): Name of the collection.
 
         Returns:
-            int: ID of the collection, or None if no collection with the given name exists.
+            str: ID of the collection, or None if no collection with the given name exists.
         """
         collection = self.collection_service.get_by_name(name)
         if collection:
@@ -135,12 +157,12 @@ class Client:
             None.
         """
         embeddings = self.embedding_fn(texts)
+        logger.info("Adding embedding to the database")
         inserted_data = self.embedding_service.add_all(
             self.collection_id, embeddings, texts, meta_data
         )
-        logger.info("inserted_data: %s", inserted_data)
 
-        self.embedding_rows += inserted_data
+        self.embedding_rows.extend(inserted_data)
 
         inserted_embeddings = [row.embedding_data for row in inserted_data]
 

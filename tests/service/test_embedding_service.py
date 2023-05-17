@@ -19,8 +19,8 @@ class TestEmbeddingService(unittest.TestCase):
         # Define mock data
         collection_id = "test_collection"
         embeddings = [[1, 2, 3], [4, 5, 6]]
-        texts = ["test_text_1", "test_text_2"]
-        metadata_list = [{"meta1": "value1"}, {"meta2": "value2"}]
+        texts = ["test_text_1", "test_text_2", "test_text_1"]
+        metadata_list = [{"meta1": "value1"}, {"meta2": "value2"}, {"meta1": "value1"}]
         expected_rows = [
             EmbeddingModel(
                 id="test_id_1",
