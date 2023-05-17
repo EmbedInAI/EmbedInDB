@@ -12,7 +12,7 @@ def read(fname):
 
 setuptools.setup(
     name="embedin",
-    version="0.2.0",
+    version="0.2.1",
     author="EmbedInAI",
     author_email="EmbedInAI@gmail.com",
     description="A lightweight vector database",
