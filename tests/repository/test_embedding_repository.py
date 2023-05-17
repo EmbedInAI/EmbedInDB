@@ -45,6 +45,58 @@ class TestEmbeddingRepository(TestCase):
         self.session.close()
         Base.metadata.drop_all(engine)
 
+    def test_add_rows_one_by_one(self):
+        self.assertEqual(len(self.session.query(EmbeddingModel).all()), 0)
+        self.repository._add_rows_one_by_one(self.embeddings)
+        self.assertEqual(len(self.session.query(EmbeddingModel).all()), 2)
+
+        self.assertEqual(
+            self.session.query(EmbeddingModel).filter_by(id="id1").first().text,
+            "some text",
+        )
+        self.assertEqual(
+            self.session.query(EmbeddingModel).filter_by(id="id2").first().text,
+            "some other text",
+        )
+
+    def test__add_rows_one_by_one(self):
+        self.repository.add_all(self.embeddings)
+        # Test adding duplicate embeddings
+        duplicate_embeddings = [
+            EmbeddingModel(
+                id="id3",
+                collection_id="collection1",
+                text="some text",
+                embedding_data=[1.0, 2.0, 3.0],
+                meta_data={"key1": "value1"},
+                hash="hash1",
+                created_at=datetime.now(),
+            ),
+            EmbeddingModel(
+                id="id4",
+                collection_id="collection1",
+                text="some new text",
+                embedding_data=[7.0, 8.0, 9.0],
+                meta_data={"key3": "value3"},
+                hash="hash4",
+                created_at=datetime.now(),
+            ),
+        ]
+        self.repository._add_rows_one_by_one(duplicate_embeddings)
+        self.assertEqual(len(self.session.query(EmbeddingModel).all()), 3)
+        self.assertEqual(
+            self.session.query(EmbeddingModel).filter_by(id="id1").first().text,
+            "some text",
+        )
+        self.assertEqual(
+            self.session.query(EmbeddingModel).filter_by(id="id2").first().text,
+            "some other text",
+        )
+        self.assertEqual(
+            self.session.query(EmbeddingModel).filter_by(id="id4").first().text,
+            "some new text",
+        )
+
     def test_add_all(self):
         self.assertEqual(len(self.session.query(EmbeddingModel).all()), 0)
         self.repository.add_all(self.embeddings)

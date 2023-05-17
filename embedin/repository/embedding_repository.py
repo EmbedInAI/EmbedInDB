@@ -1,4 +1,5 @@
 from sqlalchemy.exc import IntegrityError
+from tqdm import tqdm
 
 from embedin.model.embedding_model import EmbeddingModel
 
@@ -35,9 +36,9 @@ class EmbeddingRepository:
 
         EmbeddingModel.metadata.create_all(self.session.bind)
 
-    def add_all(self, rows):
+    def _add_rows_one_by_one(self, rows):
         """
-        Adds multiple embeddings to the database, returning the successfully inserted rows.
+        Adds multiple embeddings to the database using loop, returning the successfully inserted rows.
 
         Args:
             rows (List[EmbeddingModel]): A list of EmbeddingModel objects to add to the database.
@@ -45,28 +46,52 @@ class EmbeddingRepository:
         Returns:
             List[EmbeddingModel]: A list of successfully inserted EmbeddingModel objects.
         """
-
-        # Add the Embedding objects to the session and commit the transaction
         inserted_rows = []
         for row in rows:
             try:
                 self.session.merge(row)
                 self.session.commit()
                 inserted_rows.append(row)
-            except IntegrityError:
+            except (IntegrityError, Exception):
                 self.session.rollback()
         return inserted_rows
 
-        # TODO: bulk add will rollback all rows in case of exception
-        # try:
-        #     self.session.add_all(rows)
-        #     self.session.commit()
-        #     self.session.flush()  # immediately flush to the database
-        # except IntegrityError as e:
-        #     # a session rollback will rollback only the failed rows
-        #     self.session.rollback()
-        #     # Remove any uncommitted objects from the session
-        #     self.session.expunge_all()
+    def add_all(self, rows):
+        """
+        The method adds multiple embeddings to the database in batches, and in case of exceptions,
+        it switches to adding them one by one. It then returns the list of successfully inserted rows.
+
+        Args:
+            rows (List[EmbeddingModel]): A list of EmbeddingModel objects to add to the database.
+
+        Returns:
+            List[EmbeddingModel]: A list of successfully inserted EmbeddingModel objects.
+        """
+        inserted_rows = []
+
+        batch_size = 200
+        extra_batch = len(rows) % batch_size > 0
+        num_batches = len(rows) // batch_size + extra_batch
+
+        with tqdm(total=len(rows), desc="Inserting rows to database") as pbar:
+            for batch_index in range(num_batches):
+                batch_start = batch_index * batch_size
+                batch_end = batch_start + batch_size
+                batch = rows[batch_start:batch_end]
+
+                try:
+                    self.session.bulk_save_objects(batch)
+                    self.session.commit()
+                    inserted_rows.extend(batch)
+
+                except (IntegrityError, Exception):
+                    self.session.rollback()
+                    self.session.expunge_all()
+                    inserted_rows.extend(self._add_rows_one_by_one(batch))
+
+                pbar.update(len(batch))
+
+        return inserted_rows
 
     # This is only needed when bulk add in add_all is implemented
     def get_by_ids(self, ids):

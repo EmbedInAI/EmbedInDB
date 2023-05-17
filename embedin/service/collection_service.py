@@ -16,7 +16,7 @@ class CollectionService:
                 name (str): The name of the collection to retrieve.
 
             Returns:
-                dict: A dictionary representing the row of the collection fetched from the database.
+                CollectionModel: A CollectionModel representing the row of the collection fetched from the database.
 
         create(name, get_if_exist=True):
             Creates a new collection in the database.
@@ -26,7 +26,7 @@ class CollectionService:
                 get_if_exist (bool): If True, return the existing collection if it already exists. If False, create a new collection with the given name.
 
             Returns:
-                dict: A dictionary representing the newly created collection.
+                CollectionModel: A CollectionModel representing the newly created collection.
     """
 
     def __init__(self, session):
@@ -47,7 +47,7 @@ class CollectionService:
             name (str): The name of the collection to retrieve.
 
         Returns:
-            dict: A dictionary representing the row of the collection fetched from the database.
+            CollectionModel: A CollectionModel representing the row of the collection fetched from the database.
         """
 
         row = self.collection_repo.get_by_name(name)
@@ -62,7 +62,7 @@ class CollectionService:
             get_if_exist (bool): If True, return the existing collection if it already exists. If False, create a new collection with the given name.
 
         Returns:
-            dict: A dictionary representing the newly created collection.
+            CollectionModel: A CollectionModel representing the newly created collection.
         """
 
         collection = self.collection_repo.create(name, get_if_exist)

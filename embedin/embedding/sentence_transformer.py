@@ -40,10 +40,14 @@ class SentenceTransformerEmbedding(EmbeddingBase):
         # Return it as a numpy array
         # Check if texts is a string
         if isinstance(texts, str):
-            return self.model.encode([texts], convert_to_numpy=True).tolist()
+            return self.model.encode(
+                [texts], convert_to_numpy=True, show_progress_bar=True
+            ).tolist()
         # Check if texts is a list of strings
         if isinstance(texts, list):
             if all(isinstance(text, str) for text in texts):
-                return self.model.encode(texts, convert_to_numpy=True).tolist()
+                return self.model.encode(
+                    texts, convert_to_numpy=True, show_progress_bar=True
+                ).tolist()
             raise TypeError("Input must be a string, a list of strings")
         raise TypeError("Input must be a string, a list of strings")
