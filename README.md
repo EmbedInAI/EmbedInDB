@@ -15,19 +15,19 @@ pip install embedin
 ## Quick Start
 ### Using memory
 ```python
-from embedin.client import Client
+from embedin import Embedin
 
-client = Client(collection_name="test_collection", texts=["This is a test", "Hello world!"])
+client = Embedin(collection_name="test_collection", texts=["This is a test", "Hello world!"])
 result = client.query("These are tests", top_k=1)
 print(result)
 ```
 
 ### Using Sqlite
 ```python
-from embedin.client import Client
+from embedin import Embedin
 
 url = 'sqlite:///test.db'
-client = Client(collection_name="test_collection", texts=["This is a test", "Hello world!"])
+client = Embedin(collection_name="test_collection", texts=["This is a test", "Hello world!"])
 result = client.query("These are tests", top_k=1)
 ```
 
@@ -35,10 +35,10 @@ result = client.query("These are tests", top_k=1)
 ```python
 import os
 
-from embedin.client import Client
+from embedin import Embedin
 
 url = os.getenv('EMBEDIN_POSGRES_URL', "postgresql+psycopg2://embedin:embedin@localhost/embedin_db")
-client = Client(collection_name="test_collection", texts=["This is a test", "Hello world!"])
+client = Embedin(collection_name="test_collection", texts=["This is a test", "Hello world!"])
 result = client.query("These are tests", top_k=1)
 ```
 
@@ -46,10 +46,10 @@ result = client.query("These are tests", top_k=1)
 ```python
 import os
 
-from embedin.client import Client
+from embedin import Embedin
 
 url = os.getenv('EMBEDIN_MYSQL_URL', "mysql+pymysql://embedin:embedin@localhost/embedin_db")
-client = Client(collection_name="test_collection", texts=["This is a test", "Hello world!"])
+client = Embedin(collection_name="test_collection", texts=["This is a test", "Hello world!"])
 result = client.query("These are tests", top_k=1)
 ```
 
@@ -57,10 +57,10 @@ result = client.query("These are tests", top_k=1)
 ```python
 import os
 
-from embedin.client import Client
+from embedin import Embedin
 
 url = os.getenv('EMBEDIN_MSSQL_URL', "mssql+pymssql://sa:StrongPassword123@localhost/tempdb")
-client = Client(collection_name="test_collection", url=url)
+client = Embedin(collection_name="test_collection", url=url)
 client.add_data(texts=["This is a test"], meta_data=[{"source": "abc4"}])
 result = client.query("These are tests", top_k=1)
 ```
