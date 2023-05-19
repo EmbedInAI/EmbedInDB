@@ -23,7 +23,7 @@ from hnswlib import Index
 from embedin.index.hnsw_index import HNSWIndex
 
 
-class TestHNSWNearestNeighbors(unittest.TestCase):
+class TestHNSWIndex(unittest.TestCase):
     def setUp(self):
         d = 64  # dimension
         nb = 10**5  # database size

@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 class EmbeddingBase:
     def __call__(self, texts):
         raise NotImplementedError("Subclasses must implement __call__() method.")

@@ -70,6 +70,3 @@ class TestIndex(unittest.TestCase):
         results = index.search([10, 11, 12])
         self.assertEqual(len(results), 3)
 
-
-if __name__ == "__main__":
-    unittest.main()

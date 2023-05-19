@@ -16,8 +16,7 @@
 
 import unittest
 
-from embedin.embedding import Embedding, OpenAIEmbedding, \
-    SentenceTransformerEmbedding
+from embedin.embedding import Embedding, OpenAIEmbedding, SentenceTransformerEmbedding
 
 
 class TestEmbedding(unittest.TestCase):
