@@ -13,23 +13,3 @@
 * Push the feature branch into your fork (`$ git push origin -u my-new-feature`).
 * Create new pull request to `main` branch.
 * Verify both unit test and code coverage check have passed in the pull request
-
-## Start different databases in Docker for development
-
-### Start PostgreSQL
-```bash
-cd docker
-docker-compose up embedin-postgres
-```
-
-### Start MySQL
-```bash
-cd docker
-docker-compose up embedin-mysql
-```
-
-### Start SQL Server
-```bash
-cd docker
-docker-compose up embedin-mssql
-```

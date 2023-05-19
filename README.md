@@ -34,6 +34,14 @@ result = client.query("These are tests", top_k=1)
 ```
 
 ### Store embeddings in PostgreSQL
+
+#### Start PostgreSQL Docker container
+```bash
+cd docker
+docker-compose up embedin-postgres
+```
+__example__
+
 ```python
 import os
 
@@ -45,6 +53,15 @@ result = client.query("These are tests", top_k=1)
 ```
 
 ### Store embeddings in MySQL
+
+#### Start MySQL Docker container
+```bash
+cd docker
+docker-compose up embedin-mysql
+```
+
+__example__
+
 ```python
 import os
 
@@ -56,6 +73,15 @@ result = client.query("These are tests", top_k=1)
 ```
 
 ### Store embeddings in SQL Server
+
+#### Start SQL Server Docker container
+```bash
+cd docker
+docker-compose up embedin-mssql
+```
+
+__example__
+
 ```python
 import os
 
