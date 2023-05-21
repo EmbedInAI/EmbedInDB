@@ -34,8 +34,8 @@ class TestEmbeddingRepository(TestCase):
         self.repository = EmbeddingRepository(self.session)
 
         # Create some EmbeddingModel instances for testing
-        self.embeddings = [
-            EmbeddingModel(
+        self.embeddings_dict = [
+            dict(
                 id="id1",
                 collection_id="collection1",
                 text="some text",
@@ -44,7 +44,7 @@ class TestEmbeddingRepository(TestCase):
                 hash="hash1",
                 created_at=datetime.now(),
             ),
-            EmbeddingModel(
+            dict(
                 id="id2",
                 collection_id="collection1",
                 text="some other text",
@@ -54,6 +54,7 @@ class TestEmbeddingRepository(TestCase):
                 created_at=datetime.now(),
             ),
         ]
+        self.embeddings = [EmbeddingModel(**data) for data in self.embeddings_dict]
 
     def tearDown(self):
         self.session.rollback()
@@ -75,8 +76,8 @@ class TestEmbeddingRepository(TestCase):
             "some other text",
         )
 
-    def test__add_rows_one_by_one(self):
-        self.repository.add_all(self.embeddings)
+    def test_add_rows_one_by_one_duplicate(self):
+        self.repository.add_all(self.embeddings_dict)
         # Test adding duplicate embeddings
         duplicate_embeddings = [
             EmbeddingModel(
@@ -115,7 +116,8 @@ class TestEmbeddingRepository(TestCase):
 
     def test_add_all(self):
         self.assertEqual(len(self.session.query(EmbeddingModel).all()), 0)
-        self.repository.add_all(self.embeddings)
+
+        self.repository.add_all(self.embeddings_dict)
         self.assertEqual(len(self.session.query(EmbeddingModel).all()), 2)
 
         self.assertEqual(
@@ -128,10 +130,10 @@ class TestEmbeddingRepository(TestCase):
         )
 
     def test_add_all_with_duplicates(self):
-        self.repository.add_all(self.embeddings)
+        self.repository.add_all(self.embeddings_dict)
         # Test adding duplicate embeddings
         duplicate_embeddings = [
-            EmbeddingModel(
+            dict(
                 id="id3",
                 collection_id="collection1",
                 text="some text",
@@ -140,7 +142,7 @@ class TestEmbeddingRepository(TestCase):
                 hash="hash1",
                 created_at=datetime.now(),
             ),
-            EmbeddingModel(
+            dict(
                 id="id4",
                 collection_id="collection1",
                 text="some new text",
@@ -166,41 +168,41 @@ class TestEmbeddingRepository(TestCase):
         )
 
     def test_get_by_ids(self):
-        self.repository.add_all(self.embeddings)
+        self.repository.add_all(self.embeddings_dict)
         ids = ["id1", "id2"]
         rows = self.repository.get_by_ids(ids)
         self.assertEqual(len(rows), 2)
-        self.assertEqual(rows[0].id, "id1")
-        self.assertEqual(rows[0].collection_id, "collection1")
-        self.assertEqual(rows[0].text, "some text")
-        self.assertEqual(rows[0].embedding_data, [1.0, 2.0, 3.0])
-        self.assertEqual(rows[0].meta_data, {"key1": "value1"})
-        self.assertEqual(rows[0].hash, "hash1")
-        self.assertIsInstance(rows[0].created_at, datetime)
-        self.assertEqual(rows[1].id, "id2")
-        self.assertEqual(rows[1].collection_id, "collection1")
-        self.assertEqual(rows[1].text, "some other text")
-        self.assertEqual(rows[1].embedding_data, [4.0, 5.0, 6.0])
-        self.assertEqual(rows[1].meta_data, {"key2": "value2"})
-        self.assertEqual(rows[1].hash, "hash2")
-        self.assertIsInstance(rows[1].created_at, datetime)
+        self.assertEqual(rows[0].get("id"), "id1")
+        self.assertEqual(rows[0].get("collection_id"), "collection1")
+        self.assertEqual(rows[0].get("text"), "some text")
+        self.assertEqual(rows[0].get("embedding_data"), [1.0, 2.0, 3.0])
+        self.assertEqual(rows[0].get("meta_data"), {"key1": "value1"})
+        self.assertEqual(rows[0].get("hash"), "hash1")
+        self.assertIsInstance(rows[0].get("created_at"), str)
+        self.assertEqual(rows[1].get("id"), "id2")
+        self.assertEqual(rows[1].get("collection_id"), "collection1")
+        self.assertEqual(rows[1].get("text"), "some other text")
+        self.assertEqual(rows[1].get("embedding_data"), [4.0, 5.0, 6.0])
+        self.assertEqual(rows[1].get("meta_data"), {"key2": "value2"})
+        self.assertEqual(rows[1].get("hash"), "hash2")
+        self.assertIsInstance(rows[1].get("created_at"), str)
 
     def test_get_by_collection_id(self):
-        self.repository.add_all(self.embeddings)
+        self.repository.add_all(self.embeddings_dict)
         collection_id = "collection1"
         rows = self.repository.get_by_collection_id(collection_id)
         self.assertEqual(len(rows), 2)
-        self.assertEqual(rows[0].id, "id1")
-        self.assertEqual(rows[0].collection_id, "collection1")
-        self.assertEqual(rows[0].text, "some text")
-        self.assertEqual(rows[0].embedding_data, [1.0, 2.0, 3.0])
-        self.assertEqual(rows[0].meta_data, {"key1": "value1"})
-        self.assertEqual(rows[0].hash, "hash1")
-        self.assertIsInstance(rows[0].created_at, datetime)
-        self.assertEqual(rows[1].id, "id2")
-        self.assertEqual(rows[1].collection_id, "collection1")
-        self.assertEqual(rows[1].text, "some other text")
-        self.assertEqual(rows[1].embedding_data, [4.0, 5.0, 6.0])
-        self.assertEqual(rows[1].meta_data, {"key2": "value2"})
-        self.assertEqual(rows[1].hash, "hash2")
-        self.assertIsInstance(rows[1].created_at, datetime)
+        self.assertEqual(rows[0].get("id"), "id1")
+        self.assertEqual(rows[0].get("collection_id"), "collection1")
+        self.assertEqual(rows[0].get("text"), "some text")
+        self.assertEqual(rows[0].get("embedding_data"), [1.0, 2.0, 3.0])
+        self.assertEqual(rows[0].get("meta_data"), {"key1": "value1"})
+        self.assertEqual(rows[0].get("hash"), "hash1")
+        self.assertIsInstance(rows[0].get("created_at"), str)
+        self.assertEqual(rows[1].get("id"), "id2")
+        self.assertEqual(rows[1].get("collection_id"), "collection1")
+        self.assertEqual(rows[1].get("text"), "some other text")
+        self.assertEqual(rows[1].get("embedding_data"), [4.0, 5.0, 6.0])
+        self.assertEqual(rows[1].get("meta_data"), {"key2": "value2"})
+        self.assertEqual(rows[1].get("hash"), "hash2")
+        self.assertIsInstance(rows[1].get("created_at"), str)

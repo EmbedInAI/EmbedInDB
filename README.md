@@ -99,3 +99,6 @@ result = client.query("These are tests", top_k=1)
 
 ## Contribute
 Please refer [Contributors Guide](./CONTRIBUTING.md)
+
+# TODO
+- unit test fail on faiss index (segmentation fault)

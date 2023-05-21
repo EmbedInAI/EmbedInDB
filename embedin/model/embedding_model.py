@@ -17,10 +17,12 @@
 from sqlalchemy import Column, String, Text, JSON, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 
+from embedin.model import Model
+
 Base = declarative_base()
 
 
-class EmbeddingModel(Base):
+class EmbeddingModel(Base, Model):
     __tablename__ = "embedding"
 
     id = Column(String(36), primary_key=True)

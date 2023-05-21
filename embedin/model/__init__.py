@@ -13,3 +13,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import datetime
+
+
+class Model:
+    def to_dict(self):
+        out = {}
+        for col in self.__table__.c:
+            obj = getattr(self, col.name)
+            if isinstance(obj, datetime.datetime):
+                obj = obj.isoformat()
+            out[col.name] = obj
+        return out

@@ -13,10 +13,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import logging
 import uuid
 
+from sqlalchemy.exc import IntegrityError
+
 from embedin.model.collection_model import CollectionModel
+
+# Configure the root logger to output to the console
+logging.basicConfig(
+    format="%(asctime)s - %(levelname)s - %(message)s", level=logging.INFO
+)
+
+logger = logging.getLogger(__name__)
 
 
 class CollectionRepository:
@@ -68,11 +77,13 @@ class CollectionRepository:
 
         Returns:
         --------
-        collection: CollectionModel or None
-            The collection with the given name, or None if it does not exist.
+        collection: dict
+            The collection with the given name,
         """
 
         collection = self.session.query(CollectionModel).filter_by(name=name).first()
+
+        collection = collection.to_dict() if collection else {}
         return collection
 
     def create(self, name, get_if_exist=True):
@@ -89,7 +100,7 @@ class CollectionRepository:
 
         Returns:
         --------
-        collection: CollectionModel
+        collection: dict
             The newly created collection.
         """
 
@@ -100,8 +111,12 @@ class CollectionRepository:
             raise ValueError(f"Collection with name {name} already exists")
 
         collection_id = str(uuid.uuid4())
-        collection = CollectionModel(id=collection_id, name=name)
-        self.session.add(collection)
-        self.session.commit()
+        collection_model = CollectionModel(id=collection_id, name=name)
 
-        return collection
+        try:
+            self.session.add(collection_model)
+            self.session.commit()
+            return collection_model.to_dict()
+        except (IntegrityError, Exception) as e:
+            self.session.rollback()
+            logger.error(f"creating collection encounter an error: {str(e)}")

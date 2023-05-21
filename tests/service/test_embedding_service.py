@@ -38,7 +38,7 @@ class TestEmbeddingService(unittest.TestCase):
         texts = ["test_text_1", "test_text_2", "test_text_1"]
         metadata_list = [{"meta1": "value1"}, {"meta2": "value2"}, {"meta1": "value1"}]
         expected_rows = [
-            EmbeddingModel(
+            dict(
                 id="test_id_1",
                 collection_id=collection_id,
                 text=texts[0],
@@ -47,7 +47,7 @@ class TestEmbeddingService(unittest.TestCase):
                 hash="test_hash_1",
                 created_at=datetime.now(),
             ),
-            EmbeddingModel(
+            dict(
                 id="test_id_2",
                 collection_id=collection_id,
                 text=texts[1],
@@ -68,17 +68,17 @@ class TestEmbeddingService(unittest.TestCase):
         # Check the result
         self.assertEqual(actual_rows, expected_rows)
         self.assertEqual(len(actual_rows), 2)
-        self.assertEqual(actual_rows[0].hash, expected_rows[0].hash)
-        self.assertEqual(actual_rows[0].embedding_data, embeddings[0])
-        self.assertEqual(actual_rows[1].hash, expected_rows[1].hash)
-        self.assertEqual(actual_rows[1].embedding_data, embeddings[1])
+        self.assertEqual(actual_rows[0].get("hash"), expected_rows[0].get("hash"))
+        self.assertEqual(actual_rows[0].get("embedding_data"), embeddings[0])
+        self.assertEqual(actual_rows[1].get("hash"), expected_rows[1].get("hash"))
+        self.assertEqual(actual_rows[1].get("embedding_data"), embeddings[1])
 
     def test_get_by_collection_id(self):
         # Define mock data
         collection_id = "test_collection"
         embeddings = [[1, 2, 3], [4, 5, 6]]
         expected_rows = [
-            EmbeddingModel(
+            dict(
                 id="test_id_1",
                 collection_id=collection_id,
                 text="test_text_1",
@@ -87,7 +87,7 @@ class TestEmbeddingService(unittest.TestCase):
                 hash="test_hash_1",
                 created_at=datetime.now(),
             ),
-            EmbeddingModel(
+            dict(
                 id="test_id_2",
                 collection_id=collection_id,
                 text="test_text_2",
@@ -108,7 +108,7 @@ class TestEmbeddingService(unittest.TestCase):
         # Check the result
         self.assertEqual(actual_rows, expected_rows)
         self.assertEqual(len(actual_rows), 2)
-        self.assertEqual(actual_rows[0].hash, expected_rows[0].hash)
-        self.assertEqual(actual_rows[0].embedding_data, embeddings[0])
-        self.assertEqual(actual_rows[1].hash, expected_rows[1].hash)
-        self.assertEqual(actual_rows[1].embedding_data, embeddings[1])
+        self.assertEqual(actual_rows[0].get("hash"), expected_rows[0].get("hash"))
+        self.assertEqual(actual_rows[0].get("embedding_data"), embeddings[0])
+        self.assertEqual(actual_rows[1].get("hash"), expected_rows[1].get("hash"))
+        self.assertEqual(actual_rows[1].get("embedding_data"), embeddings[1])

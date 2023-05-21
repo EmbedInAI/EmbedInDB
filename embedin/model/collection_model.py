@@ -17,10 +17,12 @@
 from sqlalchemy import Column, String
 from sqlalchemy.ext.declarative import declarative_base
 
+from embedin.model import Model
+
 Base = declarative_base()
 
 
-class CollectionModel(Base):
+class CollectionModel(Base, Model):
     __tablename__ = "collection"
 
     id = Column(String(36), primary_key=True)

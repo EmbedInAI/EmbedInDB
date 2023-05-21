@@ -63,7 +63,8 @@ class CollectionService:
             name (str): The name of the collection to retrieve.
 
         Returns:
-            CollectionModel: A CollectionModel representing the row of the collection fetched from the database.
+            collection: dict
+            The collection with the given name
         """
 
         row = self.collection_repo.get_by_name(name)

@@ -53,9 +53,13 @@ result = client.query("These are tests", top_k=2)
 ```
 
 ## 2. add_data(texts, meta_data=None)
+WIP
 
 ## 3. create_collection(name)
+WIP
 
 ## 4. get_collection(name)
+WIP
 
 ## 5. query(query_texts, top_k=3)
+WIP

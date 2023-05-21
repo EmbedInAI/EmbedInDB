@@ -69,4 +69,3 @@ class TestIndex(unittest.TestCase):
         index.update_index(new_embeddings)
         results = index.search([10, 11, 12])
         self.assertEqual(len(results), 3)
-

@@ -15,7 +15,7 @@
 # limitations under the License.
 
 from unittest import TestCase, mock
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, patch, MagicMock
 
 from embedin.model.collection_model import CollectionModel
 from embedin.repository.collection_repository import CollectionRepository
@@ -35,7 +35,7 @@ class TestCollectionRepository(TestCase):
 
         # Call the method and assert the result
         result = self.repo.get_by_name("test_collection")
-        self.assertEqual(result, collection)
+        self.assertEqual(result, collection.to_dict())
 
         # Verify that the query was executed with the correct arguments
         self.session_mock.query.assert_called_once_with(CollectionModel)
@@ -44,6 +44,15 @@ class TestCollectionRepository(TestCase):
         )
         self.session_mock.query.return_value.filter_by.return_value.first.assert_called_once()
 
+    def test_get_by_name_return_empty_dict(self):
+        self.session_mock.query.return_value.filter_by.return_value.first.return_value = (
+            None
+        )
+
+        # Call the method and assert the result
+        result = self.repo.get_by_name("test_collection")
+        self.assertEqual(result, {})
+
     def test_create(self):
         # call create method
         name = "test_collection"
@@ -51,9 +60,10 @@ class TestCollectionRepository(TestCase):
         # mock the get_by_name method
         with patch.object(self.repo, "get_by_name", return_value=None):
             collection = self.repo.create(name)
+            self.assertIsInstance(collection, dict)
             self.assertIsNotNone(collection)
-            self.assertEqual(collection.name, name)
-            self.assertIsInstance(collection.id, str)
+            self.assertEqual(collection.get("name"), name)
+            self.assertIsInstance(collection.get("id"), str)
 
     def test_create_raise_exception(self):
         # call create method
@@ -64,14 +74,25 @@ class TestCollectionRepository(TestCase):
             with self.assertRaises(ValueError):
                 self.repo.create(name, get_if_exist=False)
 
+    def test_create_with_commit_error(self):
+        # Configure the commit method of the mock session to raise an exception
+        self.session_mock.commit.side_effect = Exception("Mocked commit error")
+
+        name = "test_collection"
+        with patch.object(self.repo, "get_by_name", return_value=None):
+            collection = self.repo.create(name, get_if_exist=True)
+            self.assertIsNone(collection)
+            self.session_mock.rollback.assert_called_once_with()
+
     def test_create_already_exists(self):
         # call create method
         name = "test_collection"
 
         # Mocking a CollectionModel object
-        mock_collection = CollectionModel(id="123", name=name)
+        mock_collection = dict(id="123", name=name)
         with patch.object(self.repo, "get_by_name", return_value=mock_collection):
             collection = self.repo.create(name)
+            self.assertIsInstance(collection, dict)
             self.assertIsNotNone(collection)
-            self.assertEqual(collection.name, mock_collection.name)
-            self.assertEqual(collection.id, mock_collection.id)
+            self.assertEqual(collection.get("name"), mock_collection["name"])
+            self.assertEqual(collection.get("id"), mock_collection["id"])
