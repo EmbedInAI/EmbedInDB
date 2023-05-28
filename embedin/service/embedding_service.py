@@ -1,10 +1,34 @@
+# -*- coding: utf-8 -*-
+# embedin - A vector database that empowers AI with persistent memory,
+# (C) 2023 EmbedInAI
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import hashlib
 import json
+import logging
 import uuid
 from datetime import datetime
 
-from embedin.model.embedding_model import EmbeddingModel
 from embedin.repository.embedding_repository import EmbeddingRepository
+
+
+# Configure the root logger to output to the console
+logging.basicConfig(
+    format="%(asctime)s - %(levelname)s - %(message)s", level=logging.INFO
+)
+
+logger = logging.getLogger(__name__)
 
 
 class EmbeddingService:
@@ -25,7 +49,7 @@ class EmbeddingService:
                 metadata_list (list, optional): A list of metadata objects, one for each embedding.
 
             Returns:
-                list: A list of EmbeddingModel objects representing the newly created embeddings.
+                List[dict]: A list of dictionaries representing EmbeddingModel objects from the collection with the given id.
 
         get_by_collection_id(collection_id):
             Fetches all embeddings from the database for a specified collection ID.
@@ -34,7 +58,7 @@ class EmbeddingService:
                 collection_id (str): The ID of the collection to retrieve embeddings for.
 
             Returns:
-                list: A list of EmbeddingModel objects representing the embeddings for the specified collection ID.
+                List[dict]: A list of dictionaries representing EmbeddingModel objects from the collection with the given id.
     """
 
     def __init__(self, session):
@@ -58,7 +82,7 @@ class EmbeddingService:
             metadata_list (list, optional): A list of metadata objects, one for each embedding.
 
         Returns:
-            list: A list of EmbeddingModel objects representing the newly created embeddings.
+            List[dict]: A list of dictionaries representing EmbeddingModel objects from the collection with the given id.
         """
 
         # Generate a list of Embedding objects
@@ -77,8 +101,7 @@ class EmbeddingService:
             hash_value_set.add(hashed)
 
             # Construct an Embedding object
-            # TODO: should not call model class directly in service class
-            row = EmbeddingModel(
+            row = dict(
                 id=emb_id,
                 collection_id=collection_id,
                 text=texts[i],
@@ -92,6 +115,8 @@ class EmbeddingService:
         # Add the Embedding objects to the session and commit the transaction
         inserted_rows = self.embedding_repo.add_all(rows)
 
+        logger.info(f"{len(inserted_rows)} rows inserted")
+
         return inserted_rows
 
     def get_by_collection_id(self, collection_id):
@@ -102,7 +127,7 @@ class EmbeddingService:
             collection_id (str): The ID of the collection to retrieve embeddings for.
 
         Returns:
-            list: A list of EmbeddingModel objects representing the embeddings for the specified collection ID.
+            List[dict]: A list of dictionaries representing EmbeddingModel objects from the collection with the given id.
         """
 
         # Get the Embedding objects for the specified collection_id

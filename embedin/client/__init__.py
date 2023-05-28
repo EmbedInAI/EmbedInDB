@@ -64,7 +64,7 @@ class Client:
         else:
             engine = create_engine(url)
 
-        session = sessionmaker(bind=engine)
+        session = sessionmaker(bind=engine, expire_on_commit=False)
         self.session = session()
 
         self.collection_service = CollectionService(self.session)
@@ -93,7 +93,7 @@ class Client:
             )
 
         self.embedding_rows.extend(inserted_rows)
-        total_embeddings = [row.embedding_data for row in self.embedding_rows]
+        total_embeddings = [row.get("embedding_data") for row in self.embedding_rows]
 
         self.index_hint = index_hint
         self.search_index = None
@@ -127,7 +127,7 @@ class Client:
             str: ID of the new collection.
         """
         collection = self.collection_service.create(name)
-        self.collection_id = collection.id
+        self.collection_id = collection.get("id")
         return self.collection_id
 
     def get_collection(self, name):
@@ -141,9 +141,8 @@ class Client:
             str: ID of the collection, or None if no collection with the given name exists.
         """
         collection = self.collection_service.get_by_name(name)
-        if collection:
-            self.collection_id = collection.id
-            return self.collection_id
+        self.collection_id = collection.get("id")
+        return self.collection_id
 
     def add_data(self, texts, meta_data=None):
         """
@@ -164,7 +163,7 @@ class Client:
 
         self.embedding_rows.extend(inserted_data)
 
-        inserted_embeddings = [row.embedding_data for row in inserted_data]
+        inserted_embeddings = [row.get("embedding_data") for row in inserted_data]
 
         if self.search_index is None:
             self.search_index = Index(embeddings, self.index_hint)
@@ -189,8 +188,29 @@ class Client:
         query_embeddings = self.embedding_fn(query_texts)
         indices = self.search_index.search(query_embeddings, top_k)
         matched_embeddings = [
-            {"text": r.text, "meta_data": r.meta_data}
+            {"text": r.get("text"), "meta_data": r.get("meta_data")}
             for i, r in enumerate(self.embedding_rows)
             if i in indices
         ]
         return matched_embeddings
+
+
+if __name__ == "__main__":
+    url = "sqlite:///test.db"
+    texts = [
+        "Which fourteen hundred years ago were nail'd",
+        "Over whose acres walk'd those blessed feet",
+        "Which fourteen hundred years ago were nail'd",
+        "For our advantage on the bitter cross.",
+        "But this our purpose now is twelve month old,",
+        "And bootless 'tis to tell you we will go:",
+        "Therefore we meet not now. Then let me hear",
+        "Of you, my gentle cousin Westmoreland,",
+        "What yesternight our council did decree",
+        "In forwarding this dear expedience.",
+        "My liege, this haste was hot in quest",
+    ]
+    client = Client(collection_name="test_collection", texts=texts, url=url)
+    client.add_data(["That is a good day!"])
+    result = client.query(texts[0:10], top_k=2)
+    print(result)
