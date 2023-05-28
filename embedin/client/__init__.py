@@ -197,10 +197,19 @@ class Client:
 
 if __name__ == "__main__":
     url = "sqlite:///test.db"
-    client = Client(
-        collection_name="test_collection",
-        texts=["This is a test", "Hello world!"],
-        url=url,
-    )
-    result = client.query("These are tests", top_k=1)
+    texts = ["Which fourteen hundred years ago were nail'd",
+             "Over whose acres walk'd those blessed feet",
+             "Which fourteen hundred years ago were nail'd",
+             "For our advantage on the bitter cross.",
+             "But this our purpose now is twelve month old,",
+             "And bootless 'tis to tell you we will go:",
+             "Therefore we meet not now. Then let me hear",
+             "Of you, my gentle cousin Westmoreland,",
+             "What yesternight our council did decree",
+             "In forwarding this dear expedience.",
+             "My liege, this haste was hot in quest"
+             ]
+    client = Client(collection_name="test_collection", texts=texts, url=url)
+    client.add_data(["That is a good day!"])
+    result = client.query(texts[0:10], top_k=2)
     print(result)

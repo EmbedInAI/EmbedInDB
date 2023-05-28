@@ -75,7 +75,7 @@ class FlatIndex(IndexBase):
         query_embeddings: numpy array
             Query embeddings to search the nearest neighbors.
         top_k: int
-            Number of nearest embeddings to return.
+            Number of the top k nearest embeddings to return.
 
         Returns:
         -------
